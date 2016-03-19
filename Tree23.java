@@ -28,7 +28,7 @@ import java.util.Collection;
  *
  * @param <T> Generic element
  *
- * @version 1.1
+ * @version 1.2
  */
 
 public class Tree23<T extends Comparable<T>> {
@@ -612,20 +612,24 @@ public class Tree23<T extends Comparable<T>> {
 				if(current.getRightElement() != null && current.getRightElement().equals(element)) found = current.getRightElement();
 				
 				else {
-					
-					found = findI(current.left, element);
-					
-					// Mentre seguim sense trobar-lo, haurem de fer mes crides, pero si ja l'hem trobat llavors no fa falta
-					if(found == null) found = findI(current.mid, element);
-					
-					if(current.getRightSon() != null && found == null) found = findI(current.right, element);
+
+                    if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+
+                        found = findI(current.left, element);
+                    }
+                    else if(current.getRightSon() == null || current.getRightElement().compareTo(element) == ROOT_IS_BIGGER) {
+
+                        found = findI(current.mid, element);
+                    }
+                    else found = findI(current.right, element);
+
 				}
 			}
 		}
 		
 		return found;
 	}
-	
+
 	/**
 	 * Metode que cerca un element en l'arbre per modificar-lo. 
 	 * 
