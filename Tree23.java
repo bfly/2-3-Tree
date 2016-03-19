@@ -27,6 +27,8 @@ import java.util.Collection;
  *
  *
  * @param <T> Generic element
+ *
+ * @version 1.1
  */
 
 public class Tree23<T extends Comparable<T>> {
@@ -58,10 +60,8 @@ public class Tree23<T extends Comparable<T>> {
 
         this.size = 0;
 
-        for(T e : elements) {
+        for(T e : elements) add(e);
 
-            add(e);
-        }
     }
 
 
@@ -160,7 +160,7 @@ public class Tree23<T extends Comparable<T>> {
 		if(!current.deepestLevel()) {
 			
 			//System.out.println("--- Still not in the deepest level! ----\n");
-			
+
 			if(current.getLeftElement().compareTo(element) == 0 || (current.getRightElement() != null && current.getRightElement().compareTo(element) == 0)) {
 				
 				// AlreadyExists
@@ -168,7 +168,7 @@ public class Tree23<T extends Comparable<T>> {
 			else if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
 				
 				//System.out.println("Current element " + element.toString() + " is smaller than current left element " + current.getLeftElement().toString());
-				
+
 				sonAscended = addElementI(current.left, element);
 
                 // Case sonAscended != null --> the element has been added on a 3-node (there were 2 elements)
@@ -361,16 +361,16 @@ public class Tree23<T extends Comparable<T>> {
 	
 	
 	/**
-	 * Metode per el·liminar un element que es trobi en l'arbre.
+	 * Deletes an element from the tree.
+	 *
+	 * @param element The element to delete
 	 * 
-	 * @param element L'element a el·liminar.
-	 * 
-	 * @return Si s'ha pogut el·liminar (true) o no (false)
+	 * @return True if the element has been deleted, false if not (the element was not in the tree)
 	 */
 	public boolean remove(T element) {
 		boolean deleted;
 		
-		this.size--; // Disminueixo de principi el nombre d'size
+		this.size--; // Disminueixo de principi el nombre d'elements
 		
 		deleted = removeI(root, element); // Immersio
 		
@@ -390,7 +390,7 @@ public class Tree23<T extends Comparable<T>> {
 	 * 		A. L'element que haviem d'el·liminar es trobava al nivell mes profund de l'arbre, d'on coneixem 
 	 * 		   tots els patrons de rebalanceig i no tenim (gaires) complicacions ja que no hi ha nivells inferiors.
 	 * 
-	 * 		B. L'element es troba entre mig de l'arbre. En aquesta situacio hem de forçar una substitucio d'size.
+	 * 		B. L'element es troba entre mig de l'arbre. En aquesta situacio hem de forçar una substitucio d'elements.
 	 * 		   El que fem es que si el·liminem un node entre mig pel costat del mig, substituirem el valor de l'element
 	 *         que anavem a el·liminar pel valor del node mes baix de l'arbre. D'aquesta manera provoquem un desbalanceig 
 	 *         en l'ultim nivell.
@@ -728,7 +728,7 @@ public class Tree23<T extends Comparable<T>> {
 	}
 	
 	
-	private class Node {
+	protected class Node {
 		
 		protected Node left;
 		protected Node mid;
