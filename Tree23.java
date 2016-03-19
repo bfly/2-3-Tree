@@ -21,10 +21,10 @@ import java.util.Collection;
  *
  * @author Albert Pernia Vazquez
  *
- * This class implements a Tree 2-3 Data Structure.
+ * <p>This class implements a Tree 2-3 Data Structure.</p>
  *
- * Check this link: https://en.wikipedia.org/wiki/2–3_tree for a deep explanation.
- *
+ * <p>Check this <a href="https://en.wikipedia.org/wiki/2–3_tree"> link</a> for a deep explanation
+ * of how it works.</p>
  *
  * @param <T> Generic element
  *
@@ -71,7 +71,7 @@ public class Tree23<T extends Comparable<T>> {
 	}
 
     /**
-     * @return The number of size inside the tree
+     * @return The number of elements inside of the tree
      */
 	public long size() {
 		
