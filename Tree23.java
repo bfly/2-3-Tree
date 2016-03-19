@@ -199,7 +199,7 @@ public class Tree23<T extends Comparable<T>> {
 					}
 				}
 				
-		    // Case: the element ascended is bigger than the left element and less than the right element
+		    // Case: the ascended element is bigger than the left element and less than the right element
 			} else if(current.getRightElement() == null || (current.getRightElement() != null && current.getRightElement().compareTo(element) == ROOT_IS_BIGGER)) {
 				
 			//	System.out.print("Current element " + element.toString() + " is bigger than current left element " + current.getLeftElement().toString()
@@ -209,7 +209,7 @@ public class Tree23<T extends Comparable<T>> {
 				
 				if(sonAscended != null) { // A new split
 
-                    // The right element is empty, so we can set the element ascended in the left and the existing left element into the right
+                    // The right element is empty, so we can set the ascended element in the left and the existing left element into the right
 					if(current.getRightElement() == null) {
 
 						//System.out.println(sonAscended.getLeftSon().getLeftElement().toString());
@@ -240,7 +240,7 @@ public class Tree23<T extends Comparable<T>> {
 				sonAscended = addElementI(current.right, element);
 				
 				
-				if(sonAscended != null) { // Split, cas: puja per la dreta
+				if(sonAscended != null) { // Split, the right element goes up
 					
 					Node leftCopy = new Node(current.getLeftElement(), null, current.getLeftSon(), current.getMidSon());
 					
