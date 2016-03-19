@@ -142,9 +142,9 @@ public class Tree23<T extends Comparable<T>> {
      * create a new tree level elevating a new node with the element which should be in the middle of the three.
      *
      * In the code, this situation happens when the Node returned by the method is not null. If it is null, the node where
-     * the new element has been inserted was a 2-node (there were an element position still empty).
+     * the new element has been inserted was a 2-node (there was an element position still empty).
      *
-     * Also, during the bottom up, the algorithm checks if the tree is well-balanced correcting the structure if not.
+     * Also, during the bottom up, the algorithm checks if the tree is well-balanced correcting the structure if it isn't.
      *
      * @param current The child where we are
      * @param element The element to insert
