@@ -131,7 +131,61 @@ public class Tree23<T extends Comparable<T>> {
 		
 		return addition;
 	}
-	
+
+
+    /**
+     * Adds all the elements into the tree.
+     *
+     * @param elements the collection of elements to add
+     *
+     * @return true if all the elements have been inserted, false if one or more elements could not be inserted because
+     *         they already exists
+     */
+    //TODO: not checked
+    public boolean addAll(Collection<T> elements) {
+        boolean ok = true;
+
+        for(T e : elements) {
+
+            if(!add(e)) ok = false;
+        }
+
+        return ok;
+    }
+
+
+    /**
+     * Adds all the elements into the tree. If one or more elements can't be inserted because they already
+     * exists, all the elements inserted before are removed from the tree.
+     *
+     * @param elements the collection of elements to add
+     *
+     * @return true if all the elements have been inserted, false if one or more elements could not be inserted because
+     *         they already exists
+     */
+    //TODO: not checked
+    public boolean addAllSafe(Collection<T> elements) {
+        int inserted = 0, i = 0;
+
+        for(T e : elements) {
+
+            if (!add(e)) {
+
+                // for each element inserted from the collection, we remove it
+                for(T a : elements) {
+
+                    if(i >= inserted) return false; // when all the elements inserted before the error have been removed, we return false
+
+                    else remove(a);
+
+                }
+            }
+            else inserted++;
+        }
+
+        return true;
+    }
+
     /**
      * The algorithm stores the new element ordered as the 'compareTo' method of the Object is done. So the tree can store
      * the data in Ascending or Descending mode.
@@ -589,7 +643,24 @@ public class Tree23<T extends Comparable<T>> {
 		return deleted;
 
 	}
-	
+
+    /**
+     * @param element The element to find
+     *
+     * @return true if this tree contains the specified element, false if not
+     */
+    public boolean contains(T element) {
+
+        return find(element) != null;
+    }
+
+    /**
+     * Search an element inside of the tree.
+     *
+     * @param element The element to find
+     *
+     * @return the element found or null if it doesn't exist
+     */
 	public T find(T element) {
 		
 		return findI(root, element);
@@ -613,7 +684,8 @@ public class Tree23<T extends Comparable<T>> {
 				
 				else {
 
-                    if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+
+                    if(current.getLeftElement() != null && current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
 
                         found = findI(current.left, element);
                     }
