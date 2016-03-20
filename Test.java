@@ -1,12 +1,15 @@
+import java.util.ArrayList;
+
 /**
  * A test class with a main to try the 2-3 Tree.
  */
 public class Test {
 
 
-    public void main(String[] args) {
+    public void test() {
 
         Tree23<Integer> tree = new Tree23<Integer>();
+
 
         System.out.println("Tree created");
 
@@ -63,6 +66,40 @@ public class Test {
         //tree.debug_tree();
 
         tree.preOrder();
+    }
+
+    /* Checks the addAll and addAllSafe methods */
+    public void test2() {
+
+        Tree23<Integer> tree23 = new Tree23<>();
+
+        ArrayList<Integer> array = new ArrayList<Integer>();
+
+        array.add(5);
+        array.add(10);
+        array.add(2);
+        array.add(5);
+
+        tree23.addAll(array);
+
+        tree23.preOrder();
+
+        array.add(20);
+        array.add(6);
+        array.add(2);
+
+        tree23.addAllSafe(array);
+
+        tree23.preOrder();
+
+    }
+
+    public static void main(String[] args) {
+
+        Test t = new Test();
+
+        System.out.println("Here");
+        t.test2();
 
     }
 

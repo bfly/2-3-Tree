@@ -1,4 +1,5 @@
 import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -38,7 +39,7 @@ public class Tree23<T extends Comparable<T>> {
 
 	private Node root;              // The root works like a ghost node
 	
-	private long size;              // Number of size inside of the tree
+	private int size;              // Number of size inside of the tree
 	
 	private static final int    ROOT_IS_BIGGER = 1;
 	private static final int    ROOT_IS_SMALLER = -1;
@@ -65,7 +66,8 @@ public class Tree23<T extends Comparable<T>> {
     /**
      * @return The number of elements inside of the tree
      */
-	public long size() {
+
+    public int size() {
 		
 		return size;
 	}
@@ -86,7 +88,6 @@ public class Tree23<T extends Comparable<T>> {
 
         return level;
 	}
-
 
 
 	/**
@@ -144,7 +145,6 @@ public class Tree23<T extends Comparable<T>> {
      * @return true if all the elements have been inserted, false if one or more elements could not be inserted because
      *         they already exists
      */
-    //TODO: not checked
     public boolean addAll(Collection<T> elements) {
         boolean ok = true;
 
@@ -166,7 +166,6 @@ public class Tree23<T extends Comparable<T>> {
      * @return true if all the elements have been inserted, false if one or more elements could not be inserted because
      *         they already exists
      */
-    //TODO: not checked
     public boolean addAllSafe(Collection<T> elements) {
         int inserted = 0, i = 0;
 
@@ -180,7 +179,6 @@ public class Tree23<T extends Comparable<T>> {
                     if(i >= inserted) return false; // when all the elements inserted before the error have been removed, we return false
 
                     else remove(a);
-
                 }
             }
             else inserted++;
@@ -352,7 +350,8 @@ public class Tree23<T extends Comparable<T>> {
 
 		return newParent;
 	}
-	
+
+
 	/**
 	 * Debug of the tree
 	 */
@@ -620,8 +619,8 @@ public class Tree23<T extends Comparable<T>> {
 		}
 		
 		return deleted;
-
 	}
+
 
     /**
      * @param element The element to find
@@ -643,7 +642,6 @@ public class Tree23<T extends Comparable<T>> {
 	public T find(T element) {
 		
 		return findI(root, element);
-		
 	}
 	
 	private T findI(Node current, T element) {
@@ -954,7 +952,6 @@ public class Tree23<T extends Comparable<T>> {
 					
 					balanced = true;
 				}
-				
 			}
 			
 			return balanced;
