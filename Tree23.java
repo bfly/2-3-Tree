@@ -31,14 +31,13 @@ import java.util.Collection;
  *
  * @param <T> Generic element
  *
- * @version 1.2.1 : Search enhanced and other minor improvements
+ * @version 1.2.2 : Search enhanced and other minor improvements
  */
 
 public class Tree23<T extends Comparable<T>> {
 
 	private Node root;              // The root works like a ghost node
 	
-	private long level;             // Deep level of the tree
 	private long size;              // Number of size inside of the tree
 	
 	private static final int    ROOT_IS_BIGGER = 1;
@@ -49,17 +48,13 @@ public class Tree23<T extends Comparable<T>> {
 	public Tree23() {
 		
 		this.root = new Node();
-		
-		level = 0;
-		
+
 		size = 0;
 	}
 
     public Tree23(Collection<T> elements) {
 
         this.root = new Node();
-
-        level = 0;
 
         this.size = 0;
 
@@ -74,12 +69,26 @@ public class Tree23<T extends Comparable<T>> {
 		
 		return size;
 	}
-	
+
+
+    /**
+     * @return the number of levels of the tree (max deep)
+     */
 	public long getLevel() {
-		
-		return level;
+		Node aux = root;
+        int level = 0;
+
+        while(aux != null) {
+
+            aux = root.getLeftSon();
+            level++;
+        }
+
+        return level;
 	}
-	
+
+
+
 	/**
 	 * @return True if the tree is empty, false if not
 	 */
@@ -118,12 +127,7 @@ public class Tree23<T extends Comparable<T>> {
 			
 			Node newRoot = addElementI(root, element); // Immersion
 		
-			if(newRoot != null) {
-				
-				root = newRoot;
-				
-				level++;
-			}
+			if(newRoot != null) root = newRoot;
 		}
 
         if(!addition) size--;
@@ -549,9 +553,7 @@ public class Tree23<T extends Comparable<T>> {
 					
 					// Hi ha un desbalanceig CRITIC en el fill inferior esquerra
 					if(current.getLeftSon().isLeaf() && !current.getMidSon().isLeaf()) {
-						
-						this.level--;
-						
+
 						T replacement = current.getMidSon().replaceMin();
 						
 						//System.out.println("---------------- REPLACEMENT of " + replacement.toString() + "----------------");
@@ -573,9 +575,7 @@ public class Tree23<T extends Comparable<T>> {
 							
 						}
 						else {
-							
-							this.level--;
-							
+
 							T replacement = current.getLeftSon().replaceMax();
 							
 							//System.out.println("---------------- REPLACEMENT of " + replacement.toString() + "----------------");
@@ -598,9 +598,7 @@ public class Tree23<T extends Comparable<T>> {
 						current.getRightSon().rebalance();
 					}
 					if(current.getMidSon().isLeaf() && !current.getRightSon().isLeaf()) {
-						
-						this.level--;
-						
+
 						T replacement = current.getRightSon().replaceMin();
 						
 						//System.out.println("---------------- REPLACEMENT of " + replacement.toString() + "----------------");
