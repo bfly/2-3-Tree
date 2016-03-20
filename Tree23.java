@@ -21,14 +21,17 @@ import java.util.Collection;
  *
  * @author Albert Pernia Vazquez
  *
- * <p>This class implements a Tree 2-3 Data Structure.</p>
+ * <p>This class implements a Tree 2-3 Data Structure. This kind of structure stores the
+ *    elements as a tree structure but balanced. So then, every leaf is at the same level in the tree.</p>
  *
- * <p>Check this <a href="https://en.wikipedia.org/wiki/2–3_tree"> link</a> for a deep explanation
+ * <p>It is focused on performing fast searchs.</p>
+ *
+ * <p>Check this <a href="https://en.wikipedia.org/wiki/2–3_tree"> link</a> for a deepest explanation
  * of how it works.</p>
  *
  * @param <T> Generic element
  *
- * @version 1.2
+ * @version 1.2.1 : Search enhanced and other minor improvements
  */
 
 public class Tree23<T extends Comparable<T>> {
@@ -63,12 +66,6 @@ public class Tree23<T extends Comparable<T>> {
         for(T e : elements) add(e);
 
     }
-
-
-	public Node getRoot() {
-		
-		return root;
-	}
 
     /**
      * @return The number of elements inside of the tree
@@ -212,29 +209,25 @@ public class Tree23<T extends Comparable<T>> {
 		Node newParent = null;
 		Node sonAscended = null;
 				
-		// Finding the deepest level
-		if(!current.deepestLevel()) {
-			
-			//System.out.println("--- Still not in the deepest level! ----\n");
+		// We aren't in the deepest level yet
+		if(!current.isLeaf()) {
 
-			if(current.getLeftElement().compareTo(element) == 0 || (current.getRightElement() != null && current.getRightElement().compareTo(element) == 0)) {
+            if(current.getLeftElement().compareTo(element) == 0 || (current.getRightElement() != null && current.getRightElement().compareTo(element) == 0)) {
 				
-				// AlreadyExists
-			}	
+				// Already exists. This condition can be modified for the particular needs of any programmer
+			}
+            // The new element is smaller than the left element
 			else if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
-				
-				//System.out.println("Current element " + element.toString() + " is smaller than current left element " + current.getLeftElement().toString());
 
 				sonAscended = addElementI(current.left, element);
 
                 // Case sonAscended != null --> the element has been added on a 3-node (there were 2 elements)
 				if(sonAscended != null) { // A new node comes from the left branch
-					
-					if(current.getRightElement() == null) {
-						
-						// The new element, in this case, is always less than the current.left
 
-						current.setRightElement(current.getLeftElement());
+                    // The new element, in this case, is always less than the current.left
+                    if(current.getRightElement() == null) {
+
+						current.setRightElement(current.getLeftElement());  // shift the current left element to the right
 							
 						current.setLeftElement(sonAscended.getLeftElement());
 							
@@ -251,15 +244,11 @@ public class Tree23<T extends Comparable<T>> {
 						
 						// Now we create the new "structure", pasting the right part
 						newParent = new Node(current.getLeftElement(), null, sonAscended, rightCopy);
-						
 					}
 				}
 				
 		    // Case: the ascended element is bigger than the left element and less than the right element
 			} else if(current.getRightElement() == null || (current.getRightElement() != null && current.getRightElement().compareTo(element) == ROOT_IS_BIGGER)) {
-				
-			//	System.out.print("Current element " + element.toString() + " is bigger than current left element " + current.getLeftElement().toString()
-				//		+ " and smaller than current right element ");
 
 				sonAscended = addElementI(current.mid, element);
 				
@@ -268,14 +257,11 @@ public class Tree23<T extends Comparable<T>> {
                     // The right element is empty, so we can set the ascended element in the left and the existing left element into the right
 					if(current.getRightElement() == null) {
 
-						//System.out.println(sonAscended.getLeftSon().getLeftElement().toString());
-						
 						current.setRightElement(sonAscended.getLeftElement());
 						
 						current.setRightSon(sonAscended.getMidSon());
 						
 						current.setMidSon(sonAscended.getLeftSon());
-						
 					}
 					else { // Another case we have to split
 						
@@ -284,29 +270,23 @@ public class Tree23<T extends Comparable<T>> {
 						Node mid = new Node(current.getRightElement(), null, sonAscended.getMidSon(), current.getRightSon());
 						
 						newParent = new Node(sonAscended.getLeftElement(), null, left, mid);
-						
 					}
 				}
-				
+
+                // The new element is bigger than the right element
 			} else if(current.getRightElement() != null && current.getRightElement().compareTo(element) == ROOT_IS_SMALLER) {
-				
-				//System.out.println("Current element " + element.toString() + " is bigger than the current right element " 
-				//		+ current.getRightElement().toString());
-				
+
 				sonAscended = addElementI(current.right, element);
-				
-				
+
 				if(sonAscended != null) { // Split, the right element goes up
 					
 					Node leftCopy = new Node(current.getLeftElement(), null, current.getLeftSon(), current.getMidSon());
-					
-					newParent = new Node(current.getRightElement(), null, leftCopy, sonAscended);
+
+                    newParent = new Node(current.getRightElement(), null, leftCopy, sonAscended);
 				}
 			}
 		}
 		else { // We are in the deepest level
-			
-			//System.out.println("\n---- We're in the deepest level of " + element.toString() + " insertion! ----\n");
 
 			addition = true;
 
@@ -316,21 +296,18 @@ public class Tree23<T extends Comparable<T>> {
 				addition = false;
 			}
 			else if(current.getRightElement() == null) { // an easy case, there is not a right element
-				
 
                 // if the current left element is bigger than the new one --> we shift the left element to the right
 				if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
 					
 					current.setRightElement(current.getLeftElement());
-					
-					current.setLeftElement(element);
-				
+
+                    current.setLeftElement(element);
 				}
                 // if the new element is bigger, we add it in the right directly
 				else if(current.getLeftElement().compareTo(element) == ROOT_IS_SMALLER) {
 					
 					current.setRightElement(element);
-					
 				}
 			}
             // Case 3-node: there are 2 elements in the node and we want to add another one. We have to split the node
@@ -351,15 +328,13 @@ public class Tree23<T extends Comparable<T>> {
                     // The new element goes up
                     if (current.getRightElement().compareTo(element) == ROOT_IS_BIGGER) {
 
-                        //System.out.println("Mid insertion ----> element: " + element.toString() + " current left: " + current.getLeftElement().toString() + " current right: " + current.getRightElement().toString());
                         Node left = new Node(current.getLeftElement(), null);
 
                         Node right = new Node(current.getRightElement(), null);
 
                         newParent = new Node(element, null, left, right);
-                    } else { // The new element is the biggest one, so the current right element goes up
 
-                        //System.out.println("Right insertion ----> element: " + element.toString() + " current left: " + current.getLeftElement().toString() + " current right: " + current.getRightElement().toString());
+                    } else { // The new element is the biggest one, so the current right element goes up
 
                         Node left = new Node(current.getLeftElement(), null);
 
@@ -370,7 +345,7 @@ public class Tree23<T extends Comparable<T>> {
                 }
             }
 		}
-		
+
 		return newParent;
 	}
 	
@@ -425,19 +400,23 @@ public class Tree23<T extends Comparable<T>> {
 	 */
 	public boolean remove(T element) {
 		boolean deleted;
-		
-		this.size--; // Disminueixo de principi el nombre d'elements
-		
-		deleted = removeI(root, element); // Immersio
+
+        // We decrease the number of levels at the start, if the element is not deleted, we increase the value at the end
+        this.size--;
+
+		deleted = removeI(root, element); // Immersion
 		
 		root.rebalance();
 		
-		if(root.getLeftElement() == null) root = null; // Hem el·liminat l'ultim element
-		
+		if(root.getLeftElement() == null) root = null; // We have deleted the last element of the tree
+
+        if(!deleted) this.size++;
+
 		return deleted;
 		
 	}
-	
+
+    //TODO: translate this comment to English!!
 	/**
 	 * De forma recursiva, s'encarrega de buscar l'element que ha d'el·liminar de l'arbre 2-3.
 	 * 
@@ -502,7 +481,7 @@ public class Tree23<T extends Comparable<T>> {
 						
 						
 						// Cas facil, l'element es trobava al final de l'arbre i per tant nomes l'hem d'el·liminar
-						if(current.deepestLevel()) {
+						if(current.isLeaf()) {
 							
 							current.setRightElement(null); // Treiem l'element i ja esta, no afecta a cap node ni desbalanceja
 						}
@@ -520,7 +499,7 @@ public class Tree23<T extends Comparable<T>> {
 			}
 			else { // L'element de l'esquerra coincideix amb el que haviem de trobar, ara hem de mirar quin dels dos casos es
 				
-				if(current.deepestLevel()) { // Cas nivell profund -> haurem d'ajustar els nodes d'abaix pel balanceig
+				if(current.isLeaf()) { // Cas nivell profund -> haurem d'ajustar els nodes d'abaix pel balanceig
 					
 					// Desplacem l'element de la dreta a l'esquerra, ja que el de l'esquerra es queda lliure
 					if(current.getRightElement() != null) { 
@@ -560,7 +539,7 @@ public class Tree23<T extends Comparable<T>> {
 						
 			current.rebalance();  // Hem de rebalancejar el nivell d'abaix
 		}
-		else if(current != null && !current.deepestLevel()) {
+		else if(current != null && !current.isLeaf()) {
 			
 			boolean balanced = false;
 			
@@ -569,7 +548,7 @@ public class Tree23<T extends Comparable<T>> {
 				if(current.getRightSon() == null) {
 					
 					// Hi ha un desbalanceig CRITIC en el fill inferior esquerra
-					if(current.getLeftSon().deepestLevel() && !current.getMidSon().deepestLevel()) {
+					if(current.getLeftSon().isLeaf() && !current.getMidSon().isLeaf()) {
 						
 						this.level--;
 						
@@ -586,7 +565,7 @@ public class Tree23<T extends Comparable<T>> {
 						add(readdition);
 						
 						// Hi ha un desbalanceig CRITIC en el fill inferior dret
-					} else if(!current.getLeftSon().deepestLevel() && current.getMidSon().deepestLevel()) {
+					} else if(!current.getLeftSon().isLeaf() && current.getMidSon().isLeaf()) {
 
 						
 						if(current.getRightElement() != null) {
@@ -614,11 +593,11 @@ public class Tree23<T extends Comparable<T>> {
 				}
 				if(current.getRightSon() != null) { // No podem possar else perque la situacio pot haver canviat en el if d'abans
 									
-					if(current.getMidSon().deepestLevel() && !current.getRightSon().deepestLevel()) {
+					if(current.getMidSon().isLeaf() && !current.getRightSon().isLeaf()) {
 
 						current.getRightSon().rebalance();
 					}
-					if(current.getMidSon().deepestLevel() && !current.getRightSon().deepestLevel()) {
+					if(current.getMidSon().isLeaf() && !current.getRightSon().isLeaf()) {
 						
 						this.level--;
 						
@@ -734,7 +713,7 @@ public class Tree23<T extends Comparable<T>> {
 
     /**
      *
-     * @Deprecated This function has been replaced by the find method, which is faster
+     * @deprecated This function has been replaced by the find method, which is faster
      *
      * If the element is found, this is deleted adding it again with the modification done. It is a good way
      * because the element modification could affect the data structure organization (the attribute/field used for the indexation).
@@ -796,7 +775,7 @@ public class Tree23<T extends Comparable<T>> {
 		
 		if(current != null) {
 			
-			if(current.deepestLevel()) {
+			if(current.isLeaf()) {
 				
 				System.out.println(current.getLeftElement().toString());
 				if(current.getRightElement() != null) System.out.println(current.getRightElement().toString());
@@ -810,7 +789,7 @@ public class Tree23<T extends Comparable<T>> {
 				
 				if(current.getRightElement() != null) {
 					
-					if(!current.deepestLevel()) System.out.println(current.getRightElement().toString());
+					if(!current.isLeaf()) System.out.println(current.getRightElement().toString());
 					
 					preOrderI(current.getRightSon());
 					
@@ -820,16 +799,32 @@ public class Tree23<T extends Comparable<T>> {
 	}
 
 
-	protected class Node {
+    /**
+     * The 2-3 tree is formed by nodes that stores the elements of the structure.
+     *
+     * Each node contains at most two elements and one at least. In case there is only one element
+     * in a node, this is <b>always in the left</b>, so in this case the <b>right element is null</b>.
+     *
+     * The 2-3 Tree structure defines two type of Nodes/childs:
+     *
+     *  - 2 Node : This node only has two childs, <b>always left and mid</b>. The right element is empty (null) and the
+     *             right node/child is also null.
+     *
+     *  - 3 Node : This node has the two elements, so it also has 3 childs: left, mid and right. It is full.
+     */
+	private class Node {
 		
-		protected Node left;
-		protected Node mid;
-		protected Node right;
-		protected T leftElement;
-		protected T rightElement;
-		
-		
-		public Node() {
+		private Node left;
+		private Node mid;
+		private Node right;
+		private T leftElement;
+		private T rightElement;
+
+
+        /**
+         * Creates an empty node/child
+         */
+        private Node() {
 			
 			left = null;
 			mid = null;
@@ -837,8 +832,18 @@ public class Tree23<T extends Comparable<T>> {
 			leftElement = null;
 			rightElement = null;
 		}
-		
-		public Node(T leftElement, T rightElement) {
+
+        /**
+         * Constructor of a 3 Node without the childs defined yet (null references).
+         *
+         * @param leftElement   the element in the left
+         * @param rightElement  the element in the right
+         *
+         */
+        // Precondition: The left element must be less than the right element
+        //               This is a private class but if you want to make it externally accessible
+        //               I recommend to use the IllegalArgumentException
+		private Node(T leftElement, T rightElement) {
 			
 			this.leftElement = leftElement;
 			this.rightElement = rightElement;
@@ -846,94 +851,108 @@ public class Tree23<T extends Comparable<T>> {
 			mid = null;
 			right = null;
 		}
-		
-		public Node(T leftElement, T rightElement, Node left, Node mid) {
+
+        /**
+         * Constructor of a 3 Node with the left and mid nodes/childs defined.
+         *
+         * @param leftElement   the element in the left
+         * @param rightElement  the element in the right
+         * @param left          the left child
+         * @param mid           the mid child
+         */
+        // Precondition: The left element must be less than the right element
+        //               This is a private class but if you want to make it externally accessible
+        //               I recommend to use the IllegalArgumentException
+		private Node(T leftElement, T rightElement, Node left, Node mid) {
 			
 			this.leftElement = leftElement;
 			this.rightElement = rightElement;			
 			this.left = left;
 			this.mid = mid;
 		}
-		
-		public T getLeftElement() {
+
+        private T getLeftElement() {
 			
 			return leftElement;
 		}
 		
-		public T getRightElement() {
+		private T getRightElement() {
 			
 			return rightElement;
 		}
 		
-		public void setLeftElement(T element) {
+		private void setLeftElement(T element) {
 			
 			this.leftElement = element;
 		}
 		
-		public void setRightElement(T element) {
+		private void setRightElement(T element) {
 			
 			this.rightElement = element;
 		}
 		
-		public void setLeftSon(Node son) {
+		private void setLeftSon(Node son) {
 			
 			this.left = son;
 		}
 		
-		public Node getLeftSon() {
+		private Node getLeftSon() {
 			
 			return left;
 		}
 		
-		public void setMidSon(Node son) {
+		private void setMidSon(Node son) {
 			
 			this.mid = son;
 		}
 		
-		public Node getMidSon() {
+		private Node getMidSon() {
 			
 			return mid;
 		}
 		
-		public void setRightSon(Node son) {
+		private void setRightSon(Node son) {
 			
 			this.right = son;
 		}
 		
-		public Node getRightSon() {
+		private Node getRightSon() {
 			
 			return right;
 		}
 		
 		/**
-		 * @return Si s'ha arribat a l'ultim nivell del arbre, es a dir, si no hi ha continuacio (true) o encara hi ha (false)
+		 * @return true if we are on the deepest level of the tree (a leaf) or false if not
 		 */
-		public boolean deepestLevel() {
+		private boolean isLeaf() {
 
 			return left == null && mid == null && right == null;
 		}
 		
 		/**
-		 * @return Si l'arbre o subarbre es troba balancejat, es a dir, hi ha tres fills
+         * Checks if the tree is well-balanced or not
+         *
+		 * @return true if the tree is well-balanced, false if not
 		 */
-		public boolean isBalanced() {
+		private boolean isBalanced() {
 			
 			boolean balanced = false;
 			
-			if(deepestLevel()) { // Si estem en el nivell mes profund, esta balancejat segur
+			if(isLeaf()) { // If we are at the deepest level (the leaf), it is well-balanced for sure
 				
 				balanced = true;
 			}
+            // There are two cases: 2 Node or 3 Node
 			else if(left.getLeftElement() != null && mid.getLeftElement() != null) {
 				
-				if(rightElement != null) { 
+				if(rightElement != null) { // 3 Node
 					
 					if(right.getLeftElement() != null) {
 						
 						balanced = true;
 					}
 				}
-				else {
+				else {  // 2 Node
 					
 					balanced = true;
 				}
@@ -944,11 +963,11 @@ public class Tree23<T extends Comparable<T>> {
 		}
 		
 	
-		protected T replaceMax() {
+		private T replaceMax() {
 			
 			T max = null;
 			
-			if(!deepestLevel()) { // Cas recursiu, no hem arribat al nivell mes profund
+			if(!isLeaf()) { // Cas recursiu, no hem arribat al nivell mes profund
 				
 				if(getRightElement() != null) {
 					
@@ -989,11 +1008,11 @@ public class Tree23<T extends Comparable<T>> {
 			return max;
 		}
 		
-		protected T replaceMin() {
+		private T replaceMin() {
 			
 			T min = null;
 			
-			if(!deepestLevel()) { // Cas recursiu, mentre no arribem al nivell mes profund anem baixant per l'esquerra sempre
+			if(!isLeaf()) { // Cas recursiu, mentre no arribem al nivell mes profund anem baixant per l'esquerra sempre
 				
 				min = left.replaceMin();
 				
@@ -1021,7 +1040,8 @@ public class Tree23<T extends Comparable<T>> {
 			return min;
 		}
 		
-		
+
+        //TODO: Translate this comment to English
 		/**
 		 * S'encarrega de balancejar l'ultim nivell de l'arbre des del penultim. 
 		 * 
