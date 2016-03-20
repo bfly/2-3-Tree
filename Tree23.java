@@ -1,5 +1,4 @@
 import java.util.Collection;
-import java.util.List;
 
 /**
  *
@@ -683,7 +682,7 @@ public class Tree23<T extends Comparable<T>> {
 	 * Finds an element inside the tree and modifies it.
      *
 	 * 
-	 * @param which The element to be modified
+	 * @param which  The element to be modified
 	 * @param update The update of the element
 	 * 
 	 * @return true if the element has been found or not, false if not
@@ -767,8 +766,7 @@ public class Tree23<T extends Comparable<T>> {
 	}
 	
 	private void preOrderI(Node current) {
-		
-		
+
 		if(current != null) {
 			
 			if(current.isLeaf()) {
@@ -988,7 +986,6 @@ public class Tree23<T extends Comparable<T>> {
 					setLeftElement(null);
 					
 					// A la primera pujada es produira un rebalanceig
-					
 				}
 			}
 			
@@ -1125,9 +1122,7 @@ public class Tree23<T extends Comparable<T>> {
 								setMidSon(null);
 								setRightSon(null);
 							}
-						
-						}	
-						
+						}
 					}
 					else {
 						
@@ -1182,7 +1177,5 @@ public class Tree23<T extends Comparable<T>> {
 				}
 			}			
 		}
-		
 	}
-
 }
