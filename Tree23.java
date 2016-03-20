@@ -705,31 +705,47 @@ public class Tree23<T extends Comparable<T>> {
 	}
 
 	/**
-	 * Metode que cerca un element en l'arbre per modificar-lo. 
+	 * Finds an element inside the tree and modifies it.
+     *
 	 * 
-	 * Si el troba, el·limina l'element actual de l'arbre i seguidament 
-	 * el torna a afegir ja que la modificacio pot haver afectat a 
-	 * l'estructura que hi havia actualment.
+	 * @param which The element to be modified
+	 * @param update The update of the element
 	 * 
-	 * @param which L'element que es vol modificar
-	 * @param update L'actualitzacio de l'element
-	 * 
-	 * @return Si s'ha pogut modificar, es a dir, si s'ha trobat l'element en l'arbre (true) o no (false)
+	 * @return true if the element has been found or not, false if not
 	 */
 	public boolean modify(T which, T update) {
 		boolean modified = false;
-		
-		if (modifyI(root, which)) {
+
+        /*
+         * If the element is found, this is deleted adding it again with the modification done. It is a good way
+         * because the element modification could affect the data structure organization (the attribute/field used for the indexation).
+         */
+		if (contains(which)) {
 			
 			modified = true;
-			
+
+            remove(which);
 			add(update);
 		}
 		
 		return modified;
 		
 	}
-	
+
+    /**
+     *
+     * @Deprecated This function has been replaced by the find method, which is faster
+     *
+     * If the element is found, this is deleted adding it again with the modification done. It is a good way
+     * because the element modification could affect the data structure organization (the attribute/field used for the indexation).
+     *
+     *
+     * @param current The current child where we are
+     * @param element The element to modify
+     *
+     * @return If the element has been found or not
+     */
+    @Deprecated
 	private boolean modifyI(Node current, T element) {
 		
 		boolean modified = false;
@@ -800,12 +816,10 @@ public class Tree23<T extends Comparable<T>> {
 					
 				}
 			}
-			
-			
 		}
 	}
-	
-	
+
+
 	protected class Node {
 		
 		protected Node left;
