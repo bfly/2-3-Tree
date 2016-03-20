@@ -109,7 +109,7 @@ public class Tree23<T extends Comparable<T>> {
 		
 		addition = false;
 		
-		if(root == null || root.getLeftElement() == null) { // Primer cas
+		if(root == null || root.getLeftElement() == null) { // first case
 			
 			if(root == null) root = new Node();
 			
@@ -119,7 +119,7 @@ public class Tree23<T extends Comparable<T>> {
 		}
 		else {
 			
-			Node newRoot = addElementI(root, element); // Immersio
+			Node newRoot = addElementI(root, element); // Immersion
 		
 			if(newRoot != null) {
 				
@@ -128,7 +128,9 @@ public class Tree23<T extends Comparable<T>> {
 				level++;
 			}
 		}
-		
+
+        if(!addition) size--;
+
 		return addition;
 	}
 
