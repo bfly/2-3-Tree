@@ -36,7 +36,7 @@ import java.util.Collection;
 
 public class Tree23<T extends Comparable<T>> {
 
-	private Node root;              // The root works like a ghost node
+	private Node root;              // The root of the tree
 	
 	private int size;              // Number of size inside of the tree
 	
@@ -530,10 +530,8 @@ public class Tree23<T extends Comparable<T>> {
 					T replacement = current.getLeftSon().replaceMax();
 					
 					current.setLeftElement(replacement);
-					
 				}
 			}
-			
 		}
 			
 		//TODO check this line --> added current != null
@@ -608,7 +606,6 @@ public class Tree23<T extends Comparable<T>> {
 						current.setRightElement(replacement);
 						
 						add(readdition);
-						
 					}
 					else balanced = true;
 				}
