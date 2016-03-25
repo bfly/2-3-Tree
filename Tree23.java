@@ -413,113 +413,105 @@ public class Tree23<T extends Comparable<T>> {
 
     //TODO: translate this comment to English!!
 	/**
-	 * De forma recursiva, s'encarrega de buscar l'element que ha d'el·liminar de l'arbre 2-3.
+	 * In a recursive way, the algorithm tries to find the element to delete from the tree.
+	 *
+	 * When it finds the element, we can have one of this two situations:
+	 *
+	 *
+	 * 		A. The element we have to delete was in the deepest level of the tree, where we know all the rebalance patterns
+	 * 			(see the method "rebalance" below implemented in the private class Node) so we will not have many troubles in
+	 * 			this case because there are not more levels below of the current one.
+	 *
+	 * 		B. The element to delete is not in the deepest level of the tree. In this situation we must force a swap.
+	 * 		   What we have to do is:
+	 *
+	 * 		   	- If we are deleting an element in the mid side, we are gonna replace it with the min value of the branch causing
+	 * 		   	  an unbalanced case but in the deepest level.
+	 *
+	 * 		   	- If the element to delete is in the right side of the tree, we replace that element with the max value of
+	 * 		   	  the branch. Then, we have a unbalanced case but in the deepest level.
+	 *
+	 * 			These processes achieves easy rebalance cases, excepting the critical case (full explained in the "rebalance" method):
+	 *
+	 * 				- If after the deletion of the element a node has been empty and we don't have enough elements in the deepest level
+	 * 				  of the tree to rebalance it, the tree will be reorganized from a higher level which increases the cost.
+	 *
+	 *
+	 * @param current The current node where we are
+	 * @param element The element to delete
 	 * 
-	 * Un cop el troba, ens podem trobar en dues situacions:
-	 * 
-	 * 		A. L'element que haviem d'el·liminar es trobava al nivell mes profund de l'arbre, d'on coneixem 
-	 * 		   tots els patrons de rebalanceig i no tenim (gaires) complicacions ja que no hi ha nivells inferiors.
-	 * 
-	 * 		B. L'element es troba entre mig de l'arbre. En aquesta situacio hem de forçar una substitucio d'elements.
-	 * 		   El que fem es que si el·liminem un node entre mig pel costat del mig, substituirem el valor de l'element
-	 *         que anavem a el·liminar pel valor del node mes baix de l'arbre. D'aquesta manera provoquem un desbalanceig 
-	 *         en l'ultim nivell.
-	 *         
-	 *         En el cas d'un element per la dreta, el substituim per l'element mes gran del arbre/subarbre (on ens trobem).
-	 *         D'aquesta forma tenim el mateix, un desbalanceig real en el nivell mes profund i res mes.
-	 *         
-	 *     Tot aixo fa que el rebalanceig sigui bastant senzill, amb l'excepcio d'un cas on es complica tant per les situacions A com B:
-	 *     
-	 *  	- Si en el nivell profund no podem rebalancejar perque un node s'ha quedat sense size i no tenim suficients size en el ultim
-	 *  	  i penultim nivell com per balancejar-lo, vol dir que hem de reorganitzar mes a munt, fent que es compliqui la reorganitzacio
-	 *        i que en la pujada de la recursiva haguem de anar comprovant que tot s'esta remuntant correctament.
-	 * 
-	 * 
-	 * @param current El node sobre el qual ens trobem
-	 * @param element L'element a el·liminar
-	 * 
-	 * @return Si s'ha pogut el·liminar (true) o no (false)
+	 * @return True if the element has been deleted or false if not
 	 */
 	private boolean removeI(Node current, T element) {
 		boolean deleted = true;
 
-		if(current == null) { // Cas trivial, hem arribat al nivell mes profund pero no hem trobat l'element -> no existeix
-			
-			deleted = false;
-			this.size++; // Com ho havia decrementat d'inici, torno a incrementar
-		}
+		// Trivial case, we are in the deepest level of the tree but we have not found the element (it does not exist)
+		if(current == null) deleted = false;
+
 		else {
-			// Tractem el cas recursiu, on l'element que ens han donat per el·liminar encara no l'hem trobat
+			// Recursive case, we are still finding the element to delete
 			if(!current.getLeftElement().equals(element)) {
-				
-				// Si no hi ha element dret o be l'element es mes petit que l'element de la dreta, ens mourem pel fill esquerra o mig
+
+				// If there is no element in the right (2 Node) or the element to delete is less than the right element
 				if(current.getRightElement() == null || current.getRightElement().compareTo(element) == ROOT_IS_BIGGER) {
 					
-					// L'element de l'esquerra es mes gran, hem de seguir pel fill esquerra
+					// The left element is bigger than the element to delete, so we go through the left child
 					if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
 						
 						deleted = removeI(current.left, element);
 					}
-					else { // Seguim pel fill del mig
+					else { // If not, we go through the mid child
 						
 						deleted = removeI(current.mid, element);
 					}
 				}
 				else {
-					
-					// Si l'element de la dreta no coincideix amb el que busquem, llavors hem de seguir pel fill dret
+
+					// If the element to delete does not equals the right element, we go through the right child
 					if(!current.getRightElement().equals(element)) {
 						
 						deleted = removeI(current.right, element);
 					}
-					else { // Hem trobat l'element i esta posicionat en un element de la dreta del node en el que ens trobem
-						
-						
-						// Cas facil, l'element es trobava al final de l'arbre i per tant nomes l'hem d'el·liminar
-						if(current.isLeaf()) {
-							
-							current.setRightElement(null); // Treiem l'element i ja esta, no afecta a cap node ni desbalanceja
-						}
-						else { // Aqui potser tenim una festa maca, l'arbre es desbalancejara... 
-							
-							// (!!!!) Cosa interessant aqui
-							
-							// Extraiem el minim node per la dreta, el col·loquem en la posicio on s'anava a el·liminar
+					else { // If not, we have found the element
+
+						// Situation A, the element equals the right element of a leaf so we just have to delete it
+						if(current.isLeaf()) current.setRightElement(null);
+
+						else { // We found the element but it is not in the leaf, this is the situation B
+
+							// We get the min element of the right branch, remove it from its current position and put it
+							// where we found the element to delete
 							T replacement = current.getRightSon().replaceMin();
-							
+
 							current.setRightElement(replacement);
 						}
 					}
 				}
 			}
-			else { // L'element de l'esquerra coincideix amb el que haviem de trobar, ara hem de mirar quin dels dos casos es
+			// The left element equals the element to delete
+			else {
 				
-				if(current.isLeaf()) { // Cas nivell profund -> haurem d'ajustar els nodes d'abaix pel balanceig
-					
-					// Desplacem l'element de la dreta a l'esquerra, ja que el de l'esquerra es queda lliure
+				if(current.isLeaf()) { // Situation A
+
+					// The left element, the element to remove, is replaced by the right element
 					if(current.getRightElement() != null) { 
 						
 						current.setLeftElement(current.getRightElement());
 						
 						current.setRightElement(null);
 					}
-					else { // No hi ha element a la dreta i per tant, al el·liminar el de l'esquerra hi haura desbalanceig...
-						
-						current.setLeftElement(null); // El·linem el node
-						
-						// Avisem a la crida en pujada de que s'ha el·liminat un node de l'ultim nivell, ja que
-						// es aquella crida l'encarregada de gestionar la situacio
-						// (!!!) nota : despres aquella crida haura de retornar CASE_DO_NOTHING
-						
+					else { // If there is no element in the right, a rebalance will be necessary
+
+						current.setLeftElement(null); // We let the node empty
+
+						// We warn on the bottom up that a node has been deleted (is empty) and a rebalance is necessary
+						// in THAT level of the tree
 						return true;
 					}
 				}
-				else { // Cas horrible -> esta pel mig
-					
-					// (!!!)
-					
-					// Recol·loquem el maxim per l'esquerra on anavem a el·liminar
-					
+				else { // Situation B
+
+					// We move the max element of the left branch where we have found the element
 					T replacement = current.getLeftSon().replaceMax();
 					
 					current.setLeftElement(replacement);
@@ -527,10 +519,9 @@ public class Tree23<T extends Comparable<T>> {
 			}
 		}
 			
-		//TODO check this line --> added current != null
 		if(current != null && !current.isBalanced()) {
 						
-			current.rebalance();  // Hem de rebalancejar el nivell d'abaix
+			current.rebalance();  // The bottom level have to be rebalanced
 		}
 		else if(current != null && !current.isLeaf()) {
 			
@@ -539,48 +530,35 @@ public class Tree23<T extends Comparable<T>> {
 			while(!balanced) {
 				
 				if(current.getRightSon() == null) {
-					
-					// Hi ha un desbalanceig CRITIC en el fill inferior esquerra
+
+					// Critical case of the situation B at the left child
 					if(current.getLeftSon().isLeaf() && !current.getMidSon().isLeaf()) {
 
 						T replacement = current.getMidSon().replaceMin();
-						
-						//System.out.println("---------------- REPLACEMENT of " + replacement.toString() + "----------------");
-	
+
 						T readdition = current.getLeftElement();
-						
-						//System.out.println("---------------- READDITION of " + readdition.toString() + "----------------");
-	
+
 						current.setLeftElement(replacement);
 						
 						add(readdition);
-						
-						// Hi ha un desbalanceig CRITIC en el fill inferior dret
+
+						// Critical case of hte situation B at the right child
 					} else if(!current.getLeftSon().isLeaf() && current.getMidSon().isLeaf()) {
 
-						
-						if(current.getRightElement() != null) {
-							
-							
-						}
-						else {
+						if(current.getRightElement() == null) {
 
 							T replacement = current.getLeftSon().replaceMax();
-							
-							//System.out.println("---------------- REPLACEMENT of " + replacement.toString() + "----------------");
-	
+
 							T readdition = current.getLeftElement();
-							
-							//System.out.println("---------------- READDITION of " + readdition.toString() + "----------------");
-	
+
 							current.setLeftElement(replacement);
 							
-							add(readdition); //(!!!!!!!!)
+							add(readdition);
 						}
-						
 					}
 				}
-				if(current.getRightSon() != null) { // No podem possar else perque la situacio pot haver canviat en el if d'abans
+				// It is important to note that we can't use the 'else' sentence because the situation could have changed in the if above
+				if(current.getRightSon() != null) {
 									
 					if(current.getMidSon().isLeaf() && !current.getRightSon().isLeaf()) {
 
@@ -589,20 +567,15 @@ public class Tree23<T extends Comparable<T>> {
 					if(current.getMidSon().isLeaf() && !current.getRightSon().isLeaf()) {
 
 						T replacement = current.getRightSon().replaceMin();
-						
-						//System.out.println("---------------- REPLACEMENT of " + replacement.toString() + "----------------");
-	
+
 						T readdition = current.getRightElement();
-						
-						//System.out.println("---------------- READDITION of " + readdition.toString() + "----------------");
-	
+
 						current.setRightElement(replacement);
 						
 						add(readdition);
 					}
 					else balanced = true;
 				}
-				
 				if(current.isBalanced()) balanced = true;
 			}
 		}
@@ -637,17 +610,16 @@ public class Tree23<T extends Comparable<T>> {
 	
 		T found = null;
 		
-		// Seguim buscant mentre no arribem a cas trivial de que hem recorregut tot l'arbre
 		if(current != null) {
- 		
-			// Cas trivial, trobem l'element
+
+			// Trivial case, we have found the element
 			if(current.getLeftElement() != null && current.getLeftElement().equals(element)) found = current.getLeftElement();
 			else {
 				
-				// Altre cas trivial, trobem que es igual a l'element de la dreta
+				// Second trivial case, the element to find equals the right element
 				if(current.getRightElement() != null && current.getRightElement().equals(element)) found = current.getRightElement();
 				else {
-
+					// Recursive cases
                     if(current.getLeftElement() != null && current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
 
                         found = findI(current.left, element);
@@ -657,7 +629,6 @@ public class Tree23<T extends Comparable<T>> {
                         found = findI(current.mid, element);
                     }
                     else found = findI(current.right, element);
-
 				}
 			}
 		}
