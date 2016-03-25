@@ -665,6 +665,47 @@ public class Tree23<T extends Comparable<T>> {
 		return found;
 	}
 
+
+	/**
+	 * @return The min element of the tree
+     */
+	public T findMin() {
+
+		if (isEmpty()) return null;
+
+		return findMinI(root);
+	}
+
+	// Immersion
+	private T findMinI(Node current) {
+
+		if(current.getLeftSon() == null) return current.leftElement;	// trivial case
+		else return findMinI(current.getLeftSon());						// recursive case
+	}
+
+	/**
+	 * @return The max element of the tree
+     */
+	public T findMax() {
+
+		if (isEmpty()) return null;
+
+		return findMaxI(root);
+	}
+
+	// Immersion
+	private T findMaxI(Node current) {
+
+		// Recursive case
+		if(current.rightElement != null && current.getRightSon() != null) return findMaxI(current.getRightSon());
+		else if(current.getMidSon() != null) return findMaxI(current.getMidSon());
+
+		// Trivial case
+		if(current.rightElement != null) return current.rightElement;
+		else return current.leftElement;
+	}
+
+
 	/**
 	 * Finds an element inside the tree and modifies it.
      *
