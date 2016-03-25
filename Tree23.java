@@ -59,13 +59,11 @@ public class Tree23<T extends Comparable<T>> {
         this.size = 0;
 
         for(T e : elements) add(e);
-
     }
 
     /**
      * @return The number of elements inside of the tree
-     */
-
+     * */
     public int size() {
 		
 		return size;
@@ -363,8 +361,6 @@ public class Tree23<T extends Comparable<T>> {
 	private void debug_treeI(Node node) {
 		
 		if(node != null) {
-			
-			// Primer cas
 
 			System.out.print("\nLeft Element : " + node.leftElement.toString());
 
@@ -386,10 +382,8 @@ public class Tree23<T extends Comparable<T>> {
 				
 				System.out.println("Right from " + node.rightElement.toString());
 				debug_treeI(node.right);
-				
 			}
 		}
-		
 	}
 	
 	
@@ -415,7 +409,6 @@ public class Tree23<T extends Comparable<T>> {
         if(!deleted) this.size++;
 
 		return deleted;
-		
 	}
 
     //TODO: translate this comment to English!!
@@ -649,14 +642,11 @@ public class Tree23<T extends Comparable<T>> {
  		
 			// Cas trivial, trobem l'element
 			if(current.getLeftElement() != null && current.getLeftElement().equals(element)) found = current.getLeftElement();
-			
 			else {
 				
 				// Altre cas trivial, trobem que es igual a l'element de la dreta
 				if(current.getRightElement() != null && current.getRightElement().equals(element)) found = current.getRightElement();
-				
 				else {
-
 
                     if(current.getLeftElement() != null && current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
 
@@ -678,7 +668,6 @@ public class Tree23<T extends Comparable<T>> {
 	/**
 	 * Finds an element inside the tree and modifies it.
      *
-	 * 
 	 * @param which  The element to be modified
 	 * @param update The update of the element
 	 * 
@@ -700,16 +689,13 @@ public class Tree23<T extends Comparable<T>> {
 		}
 		
 		return modified;
-		
 	}
 
     /**
-     *
      * @deprecated This function has been replaced by the find method, which is faster
      *
      * If the element is found, this is deleted adding it again with the modification done. It is a good way
      * because the element modification could affect the data structure organization (the attribute/field used for the indexation).
-     *
      *
      * @param current The current child where we are
      * @param element The element to modify
@@ -726,7 +712,6 @@ public class Tree23<T extends Comparable<T>> {
 			if(current.getLeftElement().equals(element)) {
 				
 				remove(element);
-				
 				modified = true;
 			}
 			else {
@@ -744,7 +729,6 @@ public class Tree23<T extends Comparable<T>> {
 					if(!modified) modified = modifyI(current.mid, element);
 					
 					if(current.getRightElement() != null && !modified) modified = modifyI(current.right, element);
-					
 				}
 			}
 		}
@@ -756,8 +740,7 @@ public class Tree23<T extends Comparable<T>> {
 		
 		if(!isEmpty()) {
 			
-			preOrderI(root);
-
+			preOrderI(root);    // Immersion
 		}
 		else System.out.println("The tree is empty");
 	}
@@ -783,12 +766,10 @@ public class Tree23<T extends Comparable<T>> {
 					if(!current.isLeaf()) System.out.println(current.getRightElement().toString());
 					
 					preOrderI(current.getRightSon());
-					
 				}
 			}
 		}
 	}
-
 
     /**
      * The 2-3 tree is formed by nodes that stores the elements of the structure.
@@ -811,7 +792,7 @@ public class Tree23<T extends Comparable<T>> {
 		private T leftElement;
 		private T rightElement;
 
-
+        
         /**
          * Creates an empty node/child
          */
@@ -1030,66 +1011,53 @@ public class Tree23<T extends Comparable<T>> {
 		}
 		
 
-        //TODO: Translate this comment to English
 		/**
-		 * S'encarrega de balancejar l'ultim nivell de l'arbre des del penultim. 
-		 * 
-		 * Intenta que quedi un element minim en cada lloc, pero si no es pot vol dir que ens hem trobat en el cas critic
-		 * i hem de rebalancejar des de mes a munt, rao per la qual destrueix un nivell i surt.
-		 * 
+		 * Rebalances the deepest level of the tree from the second deepest.
+		 *
+		 * The algorithm tries to put one element in each child, but there is a critical case where we must balance the
+		 * tree from a higher level removing the current level.
 		 */
 		private void rebalance() {
 			
 			while(!isBalanced()) {
-				
-			
-				//System.out.println("\nBalancejant des del node amb l'element: " + getLeftElement());
-				
-				if(getLeftSon().getLeftElement() == null) { // El desbalanceig es troba en el fill esquerra
-					
-					//System.out.println("\nBalanceig esquerra des de " + getLeftElement());
-					
-					// L'element esquerra del fill del mig el col·loquem com a element esquerra del fill esquerra
+
+				if(getLeftSon().getLeftElement() == null) { // The unbalance is in the left child
+
+					// We put the left element of current node as the left element of the left child
 					getLeftSon().setLeftElement(getLeftElement());
-					
-					// Ara desplacem l'element de l'esquerra del fill mig a dalt a l'esquerra
+
+					// Now we replace the left element of the mid child as the left element of the current node
 					setLeftElement(getMidSon().getLeftElement());
 					
-					// Si en el fill del mig hi havia element a la dreta, el desplacem a l'esquerra
+					// If a right element on the mid child exists, we shift it to the left
 					if(getMidSon().getRightElement() != null) {
 						
 						getMidSon().setLeftElement(getMidSon().getRightElement());
 						
 						getMidSon().setRightElement(null);
-					} 
-					// Sino, deixem el fill del mig BUIT, pero comença la festa!!!
-					
+					}
+
+					// Else, we let the mid child EMPTY, so the next iteration may solve this situation
+					// if not, the party of the critical case starts here!
 					else {
 						
 						getMidSon().setLeftElement(null);
 					}
 					
 				}
-				else if(getMidSon().getLeftElement() == null) { // El desbalanceig es troba en el fill del mig
-					
-					//System.out.println("Balanceig mig " + getLeftElement().toString());
-					
-					
-					// SITUACIO MES CRITICA, cada node del nivell mes profund te
-					// sol un element -> el sistema s'ha de remuntar des de mes a munt... 
+				else if(getMidSon().getLeftElement() == null) { // The unbalance is in the right child
+
+					// CRITICAL CASE, each node (child) of the deepest level have just one element (the right is empty)
+					// the algorithm will have to rebalance from a higher level of the tree
 					if(getRightElement() == null) {
-						
-						//System.out.println("Fill mig es null" + "fills esquerra: " + getLeftSon().getLeftElement());
-						//if(getLeftSon().getRightElement() != null) System.out.println("Fill dret: " + getLeftSon().getRightElement().toString()
-							//	);
-						
+
 						if(getLeftSon().getLeftElement() != null && getLeftSon().getRightElement() == null && getMidSon().getLeftElement() == null) {
 							
 							setRightElement(getLeftElement());
 							
 							setLeftElement(getLeftSon().getLeftElement());
 							
-							// Fem que comenci la festa
+							// Let the party starts, we remove the current childs
 							setLeftSon(null); 
 							setMidSon(null);
 							setRightSon(null);
@@ -1114,7 +1082,7 @@ public class Tree23<T extends Comparable<T>> {
 							
 							if(getLeftSon().getLeftElement() == null && getMidSon().getLeftElement() == null) {
 								
-								// Fem que comenci la festa
+								// The other but same case the party starts
 								setLeftSon(null); 
 								setMidSon(null);
 								setRightSon(null);
@@ -1123,40 +1091,38 @@ public class Tree23<T extends Comparable<T>> {
 					}
 					else {
 						
-						// Desplacem l'element de la dreta del node en el que ESTEM com a element esquerra del fill del mig
+						// We put the right element of the current node as the left element of the mid son
 						getMidSon().setLeftElement(getRightElement());
-						
-						// Desplacem l'element esquerra del fill dret com a element de la dreta del node ACTUAL
+
+						// We put the left element of the right child as the right element of the current node
 						setRightElement(getRightSon().getLeftElement());
-						
-						// Si del fill dret, d'on hem extret en la lina abans l'element, teniem element a la dreta, 
-						// el desplacem a l'esquerra com a element esquerra del fill dret
+
+						// If the right child, where we have taken the last element has a right element, we move it
+						// into the left of the same child
 						if(getRightSon().getRightElement() != null) {
 							
 							getRightSon().setLeftElement(getRightSon().getRightElement());
 							
 							getRightSon().setRightElement(null);
 						}
-						else { // Si no hi havia, aleshores ho deixem BUIT
+						else { // Else, we let the right child EMPTY
 							
 							getRightSon().setLeftElement(null);
 						}
 					}
 					
-				// Desbalanceig en el fill de la dreta
+					// Unbalance in the right child
 				} else if(getRightElement() != null && getRightSon().getLeftElement() == null) {
 					
-					//System.out.println("Balanceig dreta");
-					
-					/* En el cas de la dreta es poden donar dues situacions:
+
+					/*
+					 * In this case we can have two situations:
 					 *
-					 * (1) El fill del mig esta ple, i per tant hem de fer un desplacament dels size
-					 *     cap a la dreta
-					 *     
-					 * (2) El fill del mig nomes te l'element de l'esquerra, hem de fer un desplacament cap
-					 *     a l'esquerra de l'element de la dreta del node ACTUAL
+					 * (1) The mid child is full, so we have to do a shift of the elements to the right
+					 *
+					 * (2) The mid child only has the left element, then we have to put the right element
+					 * 	   of the current node as the right element of the mid child
 					 */
-					
 					if(getMidSon().getRightElement() != null) { // (1)
 						
 						getRightSon().setLeftElement(getRightElement());
