@@ -59,15 +59,400 @@ public class Tree23<T extends Comparable<T>> {
 
         this.size = 0;
 
-        for(T e : elements) add(e);
+		elements.forEach(this::add);	// Java 8
     }
 
-    /**
-     * @return The number of elements inside of the tree
-     * */
-    public int size() {
-		
-		return size;
+
+	/**
+	 * Adds a new element to the tree keeping it balanced.
+	 *
+	 * @param element The element to add
+	 *
+	 * @return If the element has been added (true) or not because it already exists (false)
+	 */
+	public boolean add(T element) {
+
+		size++;
+
+		addition = false;
+
+		if(root == null || root.getLeftElement() == null) { // first case
+
+			if(root == null) root = new Node();
+
+			root.setLeftElement(element);
+
+			addition = true;
+		}
+		else {
+
+			Node newRoot = addElementI(root, element); // Immersion
+
+			if(newRoot != null) root = newRoot;
+		}
+
+		if(!addition) size--;
+
+		return addition;
+	}
+
+
+	/**
+	 * Adds all the elements into the tree.
+	 *
+	 * @param elements the collection of elements to add
+	 *
+	 * @return true if all the elements have been inserted, false if one or more elements could not be inserted because
+	 *         they already exists
+	 */
+	public boolean addAll(Collection<T> elements) {
+		boolean ok = true;
+
+		for(T e : elements) {
+
+			if(!add(e)) ok = false;
+		}
+
+		return ok;
+	}
+
+
+	/**
+	 * Adds all the elements into the tree. If one or more elements can't be inserted because they already
+	 * exists, all the elements inserted before are removed from the tree.
+	 *
+	 * @param elements the collection of elements to add
+	 *
+	 * @return true if all the elements have been inserted, false if one or more elements could not be inserted because
+	 *         they already exists
+	 */
+	public boolean addAllSafe(Collection<T> elements) {
+		int inserted = 0, i = 0;
+
+		for(T e : elements) {
+
+			if (!add(e)) {
+
+				// for each element inserted from the collection, we remove it
+				for(T a : elements) {
+
+					if(i >= inserted) return false; // when all the elements inserted before the error have been removed, we return false
+
+					else remove(a);
+				}
+			}
+			else inserted++;
+		}
+
+		return true;
+	}
+
+	/**
+	 * The algorithm stores the new element ordered as the 'compareTo' method of the Object is done. So the tree can store
+	 * the data in Ascending or Descending mode.
+	 *
+	 * During the top down of the recursive, the algorithm tries to find the deepest level of the tree, where the new element will be saved.
+	 *
+	 * On the bottom up, if the new element has to be added inside a node with two existing elements (3-node), then we have to
+	 * create a new tree level elevating a new node with the element which should be in the middle of the three.
+	 *
+	 * In the code, this situation happens when the Node returned by the method is not null. If it is null, the node where
+	 * the new element has been inserted was a 2-node (there was an element position still empty).
+	 *
+	 * Also, during the bottom up, the algorithm checks if the tree is well-balanced correcting the structure if it isn't.
+	 *
+	 * @param current The child where we are
+	 * @param element The element to insert
+	 *
+	 * @return If there is a new level to add (we have tried to add a new element to a 3-node) or we don't have to do nothing (node is null)
+	 */
+	private Node addElementI(Node current, T element) {
+
+		Node newParent = null;
+		Node sonAscended = null;
+
+		// We aren't in the deepest level yet
+		if(!current.isLeaf()) {
+
+			if(current.getLeftElement().compareTo(element) == 0 || (current.getRightElement() != null && current.getRightElement().compareTo(element) == 0)) {
+
+				// Already exists. This condition can be modified for the particular needs of any programmer
+			}
+			// The new element is smaller than the left element
+			else if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+
+				sonAscended = addElementI(current.left, element);
+
+				// Case sonAscended != null --> the element has been added on a 3-node (there were 2 elements)
+				if(sonAscended != null) { // A new node comes from the left branch
+
+					// The new element, in this case, is always less than the current.left
+					if(current.getRightElement() == null) {
+
+						current.setRightElement(current.getLeftElement());  // shift the current left element to the right
+
+						current.setLeftElement(sonAscended.getLeftElement());
+
+						current.setRightSon(current.getMidSon());
+
+						current.setMidSon(sonAscended.getMidSon());
+
+						current.setLeftSon(sonAscended.getLeftSon());
+					}
+					else { // In this case we have a new split, so the current element in the left will go up
+
+						// We copy the right part of the subtree
+						Node rightCopy = new Node(current.getRightElement(), null, current.getMidSon(), current.getRightSon());
+
+						// Now we create the new "structure", pasting the right part
+						newParent = new Node(current.getLeftElement(), null, sonAscended, rightCopy);
+					}
+				}
+
+				// Case: the ascended element is bigger than the left element and less than the right element
+			} else if(current.getRightElement() == null || (current.getRightElement() != null && current.getRightElement().compareTo(element) == ROOT_IS_BIGGER)) {
+
+				sonAscended = addElementI(current.mid, element);
+
+				if(sonAscended != null) { // A new split
+
+					// The right element is empty, so we can set the ascended element in the left and the existing left element into the right
+					if(current.getRightElement() == null) {
+
+						current.setRightElement(sonAscended.getLeftElement());
+
+						current.setRightSon(sonAscended.getMidSon());
+
+						current.setMidSon(sonAscended.getLeftSon());
+					}
+					else { // Another case we have to split
+
+						Node left = new Node(current.getLeftElement(), null, current.getLeftSon(), sonAscended.getLeftSon());
+
+						Node mid = new Node(current.getRightElement(), null, sonAscended.getMidSon(), current.getRightSon());
+
+						newParent = new Node(sonAscended.getLeftElement(), null, left, mid);
+					}
+				}
+
+				// The new element is bigger than the right element
+			} else if(current.getRightElement() != null && current.getRightElement().compareTo(element) == ROOT_IS_SMALLER) {
+
+				sonAscended = addElementI(current.right, element);
+
+				if(sonAscended != null) { // Split, the right element goes up
+
+					Node leftCopy = new Node(current.getLeftElement(), null, current.getLeftSon(), current.getMidSon());
+
+					newParent = new Node(current.getRightElement(), null, leftCopy, sonAscended);
+				}
+			}
+		}
+		else { // We are in the deepest level
+
+			addition = true;
+
+			// The element already exists
+			if(current.getLeftElement().compareTo(element) == 0 || (current.getRightElement() != null && current.getRightElement().compareTo(element) == 0)) {
+
+				addition = false;
+			}
+			else if(current.getRightElement() == null) { // an easy case, there is not a right element
+
+				// if the current left element is bigger than the new one --> we shift the left element to the right
+				if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+
+					current.setRightElement(current.getLeftElement());
+
+					current.setLeftElement(element);
+				}
+				// if the new element is bigger, we add it in the right directly
+				else if(current.getLeftElement().compareTo(element) == ROOT_IS_SMALLER) {
+
+					current.setRightElement(element);
+				}
+			}
+			// Case 3-node: there are 2 elements in the node and we want to add another one. We have to split the node
+			else {
+
+				// The left element is bigger, so it will go up letting the new element on the left
+				if (current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+
+					Node left = new Node(element, null);
+
+					Node right = new Node(current.getRightElement(), null);
+
+					newParent = new Node(current.getLeftElement(), null, left, right);
+
+				} else if (current.getLeftElement().compareTo(element) == ROOT_IS_SMALLER) {
+
+					// The new element is bigger than the current on the right and less than the right element
+					// The new element goes up
+					if (current.getRightElement().compareTo(element) == ROOT_IS_BIGGER) {
+
+						Node left = new Node(current.getLeftElement(), null);
+
+						Node right = new Node(current.getRightElement(), null);
+
+						newParent = new Node(element, null, left, right);
+
+					} else { // The new element is the biggest one, so the current right element goes up
+
+						Node left = new Node(current.getLeftElement(), null);
+
+						Node right = new Node(element, null);
+
+						newParent = new Node(current.getRightElement(), null, left, right);
+					}
+				}
+			}
+		}
+
+		return newParent;
+	}
+
+
+	/**
+	 * Removes all of the elements from this Tree23 instance.
+	 */
+	public void clear() {
+
+		this.root = null;	// GC do the rest
+	}
+	/**
+	 * Creates a copy of this Tree23 instance.
+	 *
+	 * @return A copy of this Tree23 instance
+     */
+	@Override
+	public Tree23<T> clone() {
+
+		Tree23<T> clone = new Tree23<>();
+
+		if(!isEmpty()) cloneI(root, clone);
+
+		return clone;
+	}
+
+	// Immersion
+	private void cloneI(Node current, Tree23<T> clone) {
+
+		if(current != null) {
+
+			if(current.isLeaf()) {
+
+				clone.add(current.getLeftElement());
+				if(current.getRightElement() != null) clone.add(current.getRightElement());
+			}
+			else {
+
+				cloneI(current.getLeftSon(), clone);
+
+				clone.add(current.getLeftElement());
+
+				cloneI(current.getMidSon(), clone);
+
+				if(current.getRightElement() != null) {
+
+					if(!current.isLeaf()) clone.add(current.getRightElement());
+
+					cloneI(current.getRightSon(), clone);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param element The element to find
+	 *
+	 * @return true if this tree contains the specified element, false if not
+	 */
+	public boolean contains(T element) {
+
+		return find(element) != null;
+	}
+
+
+	/**
+	 * Search an element inside of the tree.
+	 *
+	 * @param element The element to find
+	 *
+	 * @return the element found or null if it doesn't exist
+	 */
+	public T find(T element) {
+
+		return findI(root, element);
+	}
+
+	private T findI(Node current, T element) {
+
+		T found = null;
+
+		if(current != null) {
+
+			// Trivial case, we have found the element
+			if(current.getLeftElement() != null && current.getLeftElement().equals(element)) found = current.getLeftElement();
+			else {
+
+				// Second trivial case, the element to find equals the right element
+				if(current.getRightElement() != null && current.getRightElement().equals(element)) found = current.getRightElement();
+				else {
+					// Recursive cases
+					if(current.getLeftElement() != null && current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+
+						found = findI(current.left, element);
+					}
+					else if(current.getRightSon() == null || current.getRightElement().compareTo(element) == ROOT_IS_BIGGER) {
+
+						found = findI(current.mid, element);
+					}
+					else found = findI(current.right, element);
+				}
+			}
+		}
+
+		return found;
+	}
+
+
+	/**
+	 * @return The min element of the tree
+	 */
+	public T findMin() {
+
+		if (isEmpty()) return null;
+
+		return findMinI(root);
+	}
+
+	// Immersion
+	private T findMinI(Node current) {
+
+		if(current.getLeftSon() == null) return current.leftElement;	// trivial case
+		else return findMinI(current.getLeftSon());						// recursive case
+	}
+
+	/**
+	 * @return The max element of the tree
+	 */
+	public T findMax() {
+
+		if (isEmpty()) return null;
+
+		return findMaxI(root);
+	}
+
+	// Immersion
+	private T findMaxI(Node current) {
+
+		// Recursive case
+		if(current.rightElement != null && current.getRightSon() != null) return findMaxI(current.getRightSon());
+		else if(current.getMidSon() != null) return findMaxI(current.getMidSon());
+
+		// Trivial case
+		if(current.rightElement != null) return current.rightElement;
+		else return current.leftElement;
 	}
 
 
@@ -87,6 +472,89 @@ public class Tree23<T extends Comparable<T>> {
         return level;
 	}
 
+	/**
+	 * Prints the elements of the tree in order.
+	 */
+	public void inOrder() {
+
+		if(!isEmpty()) {
+
+			inOrderI(root);    // Immersion
+		}
+		else System.out.println("The tree is empty");
+	}
+
+	private void inOrderI(Node current) {
+
+		if(current != null) {
+
+			if(current.isLeaf()) {
+
+				System.out.println(current.getLeftElement().toString());
+				if(current.getRightElement() != null) System.out.println(current.getRightElement().toString());
+			}
+			else {
+
+				inOrderI(current.getLeftSon());
+				System.out.println(current.getLeftElement().toString());
+
+				inOrderI(current.getMidSon());
+
+				if(current.getRightElement() != null) {
+
+					if(!current.isLeaf()) System.out.println(current.getRightElement().toString());
+
+					inOrderI(current.getRightSon());
+				}
+			}
+		}
+	}
+
+	/**
+	 * Prints the elements of the tree in order if they accomplish a condition.
+	 *
+	 * @param predicate The condition that an element must accomplish to be printed
+	 */
+	public void inOrder(Predicate<T> predicate) {
+
+		if(!isEmpty()) {
+
+			inOrderI(root, predicate);    // Immersion
+		}
+		else System.out.println("The tree is empty");
+	}
+
+	private void inOrderI(Node current, Predicate<T> predicate) {
+
+		if(current != null) {
+
+			if(current.isLeaf()) {
+
+				if(predicate.test(current.getLeftElement())) System.out.println(current.getLeftElement().toString());
+
+				if(current.getRightElement() != null && predicate.test(current.getRightElement())) {
+
+					System.out.println(current.getRightElement().toString());
+				}
+			}
+			else {
+
+				inOrderI(current.getLeftSon(), predicate);
+
+				if(predicate.test(current.getLeftElement())) System.out.println(current.getLeftElement().toString());
+
+				inOrderI(current.getMidSon(), predicate);
+
+				if(current.getRightElement() != null) {
+
+					if(!current.isLeaf() && predicate.test(current.getRightElement())) System.out.println(current.getRightElement().toString());
+
+					inOrderI(current.getRightSon(), predicate);
+				}
+			}
+		}
+	}
+
 
 	/**
 	 * @return True if the tree is empty, false if not
@@ -99,295 +567,79 @@ public class Tree23<T extends Comparable<T>> {
 		
 		return false;
 	}
-	
-	
+
 	/**
-     * Adds a new element to the tree keeping it balanced.
-     *
-	 * @param element The element to add
-	 * 
-	 * @return If the element has been added (true) or not because it already exists (false)
+	 * Finds an element inside the tree and modifies it.
+	 *
+	 * @param which  The element to be modified
+	 * @param update The update of the element
+	 *
+	 * @return true if the element has been found or not, false if not
 	 */
-	public boolean add(T element) {
-		
-		size++;
-		
-		addition = false;
-		
-		if(root == null || root.getLeftElement() == null) { // first case
-			
-			if(root == null) root = new Node();
-			
-			root.setLeftElement(element);
-			
-			addition = true;
-		}
-		else {
-			
-			Node newRoot = addElementI(root, element); // Immersion
-		
-			if(newRoot != null) root = newRoot;
+	public boolean modify(T which, T update) {
+		boolean modified = false;
+
+        /*
+         * If the element is found, this is deleted adding it again with the modification done. It is a good way
+         * because the element modification could affect the data structure organization (the attribute/field used for the indexation).
+         */
+		if (contains(which)) {
+
+			modified = true;
+
+			remove(which);
+			add(update);
 		}
 
-        if(!addition) size--;
-
-		return addition;
+		return modified;
 	}
 
+	/**
+	 * @deprecated This function has been replaced by the find method, which is faster
+	 *
+	 * If the element is found, this is deleted adding it again with the modification done. It is a good way
+	 * because the element modification could affect the data structure organization (the attribute/field used for the indexation).
+	 *
+	 * @param current The current child where we are
+	 * @param element The element to modify
+	 *
+	 * @return If the element has been found or not
+	 */
+	@Deprecated
+	private boolean modifyI(Node current, T element) {
 
-    /**
-     * Adds all the elements into the tree.
-     *
-     * @param elements the collection of elements to add
-     *
-     * @return true if all the elements have been inserted, false if one or more elements could not be inserted because
-     *         they already exists
-     */
-    public boolean addAll(Collection<T> elements) {
-        boolean ok = true;
+		boolean modified = false;
 
-        for(T e : elements) {
+		if(current != null) {
 
-            if(!add(e)) ok = false;
-        }
+			if(current.getLeftElement().equals(element)) {
 
-        return ok;
-    }
-
-
-    /**
-     * Adds all the elements into the tree. If one or more elements can't be inserted because they already
-     * exists, all the elements inserted before are removed from the tree.
-     *
-     * @param elements the collection of elements to add
-     *
-     * @return true if all the elements have been inserted, false if one or more elements could not be inserted because
-     *         they already exists
-     */
-    public boolean addAllSafe(Collection<T> elements) {
-        int inserted = 0, i = 0;
-
-        for(T e : elements) {
-
-            if (!add(e)) {
-
-                // for each element inserted from the collection, we remove it
-                for(T a : elements) {
-
-                    if(i >= inserted) return false; // when all the elements inserted before the error have been removed, we return false
-
-                    else remove(a);
-                }
-            }
-            else inserted++;
-        }
-
-        return true;
-    }
-
-    /**
-     * The algorithm stores the new element ordered as the 'compareTo' method of the Object is done. So the tree can store
-     * the data in Ascending or Descending mode.
-     *
-     * During the top down of the recursive, the algorithm tries to find the deepest level of the tree, where the new element will be saved.
-     *
-     * On the bottom up, if the new element has to be added inside a node with two existing elements (3-node), then we have to
-     * create a new tree level elevating a new node with the element which should be in the middle of the three.
-     *
-     * In the code, this situation happens when the Node returned by the method is not null. If it is null, the node where
-     * the new element has been inserted was a 2-node (there was an element position still empty).
-     *
-     * Also, during the bottom up, the algorithm checks if the tree is well-balanced correcting the structure if it isn't.
-     *
-     * @param current The child where we are
-     * @param element The element to insert
-     *
-     * @return If there is a new level to add (we have tried to add a new element to a 3-node) or we don't have to do nothing (node is null)
-     */
-	private Node addElementI(Node current, T element) {
-		
-		Node newParent = null;
-		Node sonAscended = null;
-				
-		// We aren't in the deepest level yet
-		if(!current.isLeaf()) {
-
-            if(current.getLeftElement().compareTo(element) == 0 || (current.getRightElement() != null && current.getRightElement().compareTo(element) == 0)) {
-				
-				// Already exists. This condition can be modified for the particular needs of any programmer
+				remove(element);
+				modified = true;
 			}
-            // The new element is smaller than the left element
-			else if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
-
-				sonAscended = addElementI(current.left, element);
-
-                // Case sonAscended != null --> the element has been added on a 3-node (there were 2 elements)
-				if(sonAscended != null) { // A new node comes from the left branch
-
-                    // The new element, in this case, is always less than the current.left
-                    if(current.getRightElement() == null) {
-
-						current.setRightElement(current.getLeftElement());  // shift the current left element to the right
-							
-						current.setLeftElement(sonAscended.getLeftElement());
-							
-						current.setRightSon(current.getMidSon());
-							
-						current.setMidSon(sonAscended.getMidSon());
-							
-						current.setLeftSon(sonAscended.getLeftSon());
-					}
-					else { // In this case we have a new split, so the current element in the left will go up
-
-						// We copy the right part of the subtree
-						Node rightCopy = new Node(current.getRightElement(), null, current.getMidSon(), current.getRightSon());
-						
-						// Now we create the new "structure", pasting the right part
-						newParent = new Node(current.getLeftElement(), null, sonAscended, rightCopy);
-					}
-				}
-				
-		    // Case: the ascended element is bigger than the left element and less than the right element
-			} else if(current.getRightElement() == null || (current.getRightElement() != null && current.getRightElement().compareTo(element) == ROOT_IS_BIGGER)) {
-
-				sonAscended = addElementI(current.mid, element);
-				
-				if(sonAscended != null) { // A new split
-
-                    // The right element is empty, so we can set the ascended element in the left and the existing left element into the right
-					if(current.getRightElement() == null) {
-
-						current.setRightElement(sonAscended.getLeftElement());
-						
-						current.setRightSon(sonAscended.getMidSon());
-						
-						current.setMidSon(sonAscended.getLeftSon());
-					}
-					else { // Another case we have to split
-						
-						Node left = new Node(current.getLeftElement(), null, current.getLeftSon(), sonAscended.getLeftSon());
-						
-						Node mid = new Node(current.getRightElement(), null, sonAscended.getMidSon(), current.getRightSon());
-						
-						newParent = new Node(sonAscended.getLeftElement(), null, left, mid);
-					}
-				}
-
-                // The new element is bigger than the right element
-			} else if(current.getRightElement() != null && current.getRightElement().compareTo(element) == ROOT_IS_SMALLER) {
-
-				sonAscended = addElementI(current.right, element);
-
-				if(sonAscended != null) { // Split, the right element goes up
-					
-					Node leftCopy = new Node(current.getLeftElement(), null, current.getLeftSon(), current.getMidSon());
-
-                    newParent = new Node(current.getRightElement(), null, leftCopy, sonAscended);
-				}
-			}
-		}
-		else { // We are in the deepest level
-
-			addition = true;
-
-            // The element already exists
-			if(current.getLeftElement().compareTo(element) == 0 || (current.getRightElement() != null && current.getRightElement().compareTo(element) == 0)) {
-								
-				addition = false;
-			}
-			else if(current.getRightElement() == null) { // an easy case, there is not a right element
-
-                // if the current left element is bigger than the new one --> we shift the left element to the right
-				if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
-					
-					current.setRightElement(current.getLeftElement());
-
-                    current.setLeftElement(element);
-				}
-                // if the new element is bigger, we add it in the right directly
-				else if(current.getLeftElement().compareTo(element) == ROOT_IS_SMALLER) {
-					
-					current.setRightElement(element);
-				}
-			}
-            // Case 3-node: there are 2 elements in the node and we want to add another one. We have to split the node
 			else {
 
-                // The left element is bigger, so it will go up letting the new element on the left
-                if (current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+				if(current.getRightElement() != null && current.getRightElement().equals(element)) {
 
-                    Node left = new Node(element, null);
+					modified = true;
 
-                    Node right = new Node(current.getRightElement(), null);
+					remove(element);
+				}
+				else {
 
-                    newParent = new Node(current.getLeftElement(), null, left, right);
+					modified = modifyI(current.left, element);
 
-                } else if (current.getLeftElement().compareTo(element) == ROOT_IS_SMALLER) {
+					if(!modified) modified = modifyI(current.mid, element);
 
-                    // The new element is bigger than the current on the right and less than the right element
-                    // The new element goes up
-                    if (current.getRightElement().compareTo(element) == ROOT_IS_BIGGER) {
-
-                        Node left = new Node(current.getLeftElement(), null);
-
-                        Node right = new Node(current.getRightElement(), null);
-
-                        newParent = new Node(element, null, left, right);
-
-                    } else { // The new element is the biggest one, so the current right element goes up
-
-                        Node left = new Node(current.getLeftElement(), null);
-
-                        Node right = new Node(element, null);
-
-                        newParent = new Node(current.getRightElement(), null, left, right);
-                    }
-                }
-            }
-		}
-
-		return newParent;
-	}
-
-
-	/**
-	 * Debug of the tree
-	 */
-	public void debug_tree() {
-		
-		System.out.println("\nStarting debug!\n-----------------");
-		debug_treeI(root);
-	}
-	
-	private void debug_treeI(Node node) {
-		
-		if(node != null) {
-
-			System.out.print("\nLeft Element : " + node.leftElement.toString());
-
-			if(node.rightElement != null) System.out.println(" and right Element : " + node.rightElement.toString());
-			else System.out.println("");
-			
-			System.out.println("---------------------------------------\n");
-			
-			System.out.println("Left from " + node.leftElement.toString());
-			debug_treeI(node.left);
-
-			System.out.print("Mid from " + node.leftElement);
-			
-			if(node.rightElement != null) System.out.println(" and " + node.rightElement.toString());
-			else System.out.println("");
-			debug_treeI(node.mid);
-			
-			if(node.right != null && node.rightElement != null) {
-				
-				System.out.println("Right from " + node.rightElement.toString());
-				debug_treeI(node.right);
+					if(current.getRightElement() != null && !modified) modified = modifyI(current.right, element);
+				}
 			}
 		}
+
+		return modified;
 	}
-	
-	
+
+
 	/**
 	 * Deletes an element from the tree.
 	 *
@@ -412,7 +664,6 @@ public class Tree23<T extends Comparable<T>> {
 		return deleted;
 	}
 
-    //TODO: translate this comment to English!!
 	/**
 	 * In a recursive way, the algorithm tries to find the element to delete from the tree.
 	 *
@@ -585,255 +836,15 @@ public class Tree23<T extends Comparable<T>> {
 	}
 
 
-    /**
-     * @param element The element to find
-     *
-     * @return true if this tree contains the specified element, false if not
-     */
-    public boolean contains(T element) {
-
-        return find(element) != null;
-    }
-
-    /**
-     * Search an element inside of the tree.
-     *
-     * @param element The element to find
-     *
-     * @return the element found or null if it doesn't exist
-     */
-	public T find(T element) {
-		
-		return findI(root, element);
-	}
-	
-	private T findI(Node current, T element) {
-	
-		T found = null;
-		
-		if(current != null) {
-
-			// Trivial case, we have found the element
-			if(current.getLeftElement() != null && current.getLeftElement().equals(element)) found = current.getLeftElement();
-			else {
-				
-				// Second trivial case, the element to find equals the right element
-				if(current.getRightElement() != null && current.getRightElement().equals(element)) found = current.getRightElement();
-				else {
-					// Recursive cases
-                    if(current.getLeftElement() != null && current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
-
-                        found = findI(current.left, element);
-                    }
-                    else if(current.getRightSon() == null || current.getRightElement().compareTo(element) == ROOT_IS_BIGGER) {
-
-                        found = findI(current.mid, element);
-                    }
-                    else found = findI(current.right, element);
-				}
-			}
-		}
-		
-		return found;
-	}
-
-
 	/**
-	 * @return The min element of the tree
-     */
-	public T findMin() {
+	 * @return The number of elements inside of the tree
+	 * */
+	public int size() {
 
-		if (isEmpty()) return null;
-
-		return findMinI(root);
-	}
-
-	// Immersion
-	private T findMinI(Node current) {
-
-		if(current.getLeftSon() == null) return current.leftElement;	// trivial case
-		else return findMinI(current.getLeftSon());						// recursive case
+		return size;
 	}
 
 	/**
-	 * @return The max element of the tree
-     */
-	public T findMax() {
-
-		if (isEmpty()) return null;
-
-		return findMaxI(root);
-	}
-
-	// Immersion
-	private T findMaxI(Node current) {
-
-		// Recursive case
-		if(current.rightElement != null && current.getRightSon() != null) return findMaxI(current.getRightSon());
-		else if(current.getMidSon() != null) return findMaxI(current.getMidSon());
-
-		// Trivial case
-		if(current.rightElement != null) return current.rightElement;
-		else return current.leftElement;
-	}
-
-
-	/**
-	 * Finds an element inside the tree and modifies it.
-     *
-	 * @param which  The element to be modified
-	 * @param update The update of the element
-	 * 
-	 * @return true if the element has been found or not, false if not
-	 */
-	public boolean modify(T which, T update) {
-		boolean modified = false;
-
-        /*
-         * If the element is found, this is deleted adding it again with the modification done. It is a good way
-         * because the element modification could affect the data structure organization (the attribute/field used for the indexation).
-         */
-		if (contains(which)) {
-			
-			modified = true;
-
-            remove(which);
-			add(update);
-		}
-		
-		return modified;
-	}
-
-    /**
-     * @deprecated This function has been replaced by the find method, which is faster
-     *
-     * If the element is found, this is deleted adding it again with the modification done. It is a good way
-     * because the element modification could affect the data structure organization (the attribute/field used for the indexation).
-     *
-     * @param current The current child where we are
-     * @param element The element to modify
-     *
-     * @return If the element has been found or not
-     */
-    @Deprecated
-	private boolean modifyI(Node current, T element) {
-		
-		boolean modified = false;
-		
-		if(current != null) {
-			
-			if(current.getLeftElement().equals(element)) {
-				
-				remove(element);
-				modified = true;
-			}
-			else {
-				
-				if(current.getRightElement() != null && current.getRightElement().equals(element)) {
-					
-					modified = true;
-					
-					remove(element);
-				}
-				else {
-					
-					modified = modifyI(current.left, element);
-					
-					if(!modified) modified = modifyI(current.mid, element);
-					
-					if(current.getRightElement() != null && !modified) modified = modifyI(current.right, element);
-				}
-			}
-		}
-		
-		return modified;
-	}
-
-	/**
-	 * Prints the elements of the tree in order.
-	 */
-	public void inOrder() {
-		
-		if(!isEmpty()) {
-			
-			inOrderI(root);    // Immersion
-		}
-		else System.out.println("The tree is empty");
-	}
-	
-	private void inOrderI(Node current) {
-
-		if(current != null) {
-			
-			if(current.isLeaf()) {
-				
-				System.out.println(current.getLeftElement().toString());
-				if(current.getRightElement() != null) System.out.println(current.getRightElement().toString());
-			}
-			else {
-				
-				inOrderI(current.getLeftSon());
-				System.out.println(current.getLeftElement().toString());
-	
-				inOrderI(current.getMidSon());
-				
-				if(current.getRightElement() != null) {
-					
-					if(!current.isLeaf()) System.out.println(current.getRightElement().toString());
-					
-					inOrderI(current.getRightSon());
-				}
-			}
-		}
-	}
-
-	/**
-	 * Prints the elements of the tree in order if they accomplish a condition.
-	 *
-	 * @param predicate The condition that an element must accomplish to be printed
-     */
-	public void inOrder(Predicate<T> predicate) {
-
-		if(!isEmpty()) {
-
-			inOrderI(root, predicate);    // Immersion
-		}
-		else System.out.println("The tree is empty");
-	}
-
-	private void inOrderI(Node current, Predicate<T> predicate) {
-
-		if(current != null) {
-
-			if(current.isLeaf()) {
-
-				if(predicate.test(current.getLeftElement())) System.out.println(current.getLeftElement().toString());
-
-				if(current.getRightElement() != null && predicate.test(current.getRightElement())) {
-
-					System.out.println(current.getRightElement().toString());
-				}
-			}
-			else {
-
-				inOrderI(current.getLeftSon(), predicate);
-
-				if(predicate.test(current.getLeftElement())) System.out.println(current.getLeftElement().toString());
-
-				inOrderI(current.getMidSon(), predicate);
-
-				if(current.getRightElement() != null) {
-
-					if(!current.isLeaf() && predicate.test(current.getRightElement())) System.out.println(current.getRightElement().toString());
-
-					inOrderI(current.getRightSon(), predicate);
-				}
-			}
-		}
-	}
-
-
-    /**
      * The 2-3 tree is formed by nodes that stores the elements of the structure.
      *
      * Each node contains at most two elements and one at least. In case there is only one element

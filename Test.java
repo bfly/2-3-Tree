@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+import static javafx.scene.input.KeyCode.T;
+
 /**
  * A test class with a main to try the 2-3 Tree.
  */
@@ -107,11 +109,28 @@ public class Test {
         tree23.inOrder(t -> t > 5);
     }
 
+    public void test4() {
+
+        Tree23<Integer> tree23 = new Tree23<>();
+
+        for(int i = 0; i <= 100; i++) tree23.add(i);
+
+        Tree23<Integer> copy = tree23.clone();
+
+        tree23.remove(5);
+
+        System.out.println("First instance content: ");
+        tree23.inOrder();
+
+        System.out.println("Copy: ");
+        copy.inOrder();
+    }
+
     public static void main(String[] args) {
 
         Test t = new Test();
 
-        t.test3();
+        t.test4();
 
     }
 
