@@ -1,4 +1,5 @@
 import java.util.Collection;
+import java.util.function.Predicate;
 
 /**
  *
@@ -747,17 +748,20 @@ public class Tree23<T extends Comparable<T>> {
 		
 		return modified;
 	}
-	
-	public void preOrder() {
+
+	/**
+	 * Prints the elements of the tree in order.
+	 */
+	public void inOrder() {
 		
 		if(!isEmpty()) {
 			
-			preOrderI(root);    // Immersion
+			inOrderI(root);    // Immersion
 		}
 		else System.out.println("The tree is empty");
 	}
 	
-	private void preOrderI(Node current) {
+	private void inOrderI(Node current) {
 
 		if(current != null) {
 			
@@ -768,20 +772,66 @@ public class Tree23<T extends Comparable<T>> {
 			}
 			else {
 				
-				preOrderI(current.getLeftSon());
+				inOrderI(current.getLeftSon());
 				System.out.println(current.getLeftElement().toString());
 	
-				preOrderI(current.getMidSon());
+				inOrderI(current.getMidSon());
 				
 				if(current.getRightElement() != null) {
 					
 					if(!current.isLeaf()) System.out.println(current.getRightElement().toString());
 					
-					preOrderI(current.getRightSon());
+					inOrderI(current.getRightSon());
 				}
 			}
 		}
 	}
+
+	/**
+	 * Prints the elements of the tree in order if they accomplish a condition.
+	 *
+	 * @param predicate The condition that an element must accomplish to be printed
+     */
+	public void inOrder(Predicate<T> predicate) {
+
+		if(!isEmpty()) {
+
+			inOrderI(root, predicate);    // Immersion
+		}
+		else System.out.println("The tree is empty");
+	}
+
+	private void inOrderI(Node current, Predicate<T> predicate) {
+
+		if(current != null) {
+
+			if(current.isLeaf()) {
+
+				if(predicate.test(current.getLeftElement())) System.out.println(current.getLeftElement().toString());
+
+				if(current.getRightElement() != null && predicate.test(current.getRightElement())) {
+
+					System.out.println(current.getRightElement().toString());
+				}
+			}
+			else {
+
+				inOrderI(current.getLeftSon(), predicate);
+
+				if(predicate.test(current.getLeftElement())) System.out.println(current.getLeftElement().toString());
+
+				inOrderI(current.getMidSon(), predicate);
+
+				if(current.getRightElement() != null) {
+
+					if(!current.isLeaf() && predicate.test(current.getRightElement())) System.out.println(current.getRightElement().toString());
+
+					inOrderI(current.getRightSon(), predicate);
+				}
+			}
+		}
+	}
+
 
     /**
      * The 2-3 tree is formed by nodes that stores the elements of the structure.
