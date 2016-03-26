@@ -40,7 +40,7 @@ public class Test {
             i++;
         }
 
-        tree.preOrder();
+        tree.inOrder();
 
         //tree.debug_tree();
 
@@ -65,7 +65,7 @@ public class Test {
 
         //tree.debug_tree();
 
-        tree.preOrder();
+        tree.inOrder();
     }
 
     /* Checks the addAll and addAllSafe methods */
@@ -82,7 +82,7 @@ public class Test {
 
         tree23.addAll(array);
 
-        tree23.preOrder();
+        tree23.inOrder();
 
         array.add(20);
         array.add(6);
@@ -90,16 +90,28 @@ public class Test {
 
         tree23.addAllSafe(array);
 
-        tree23.preOrder();
+        tree23.inOrder();
 
+    }
+
+    /* An example of how to use the predicate interface to, in this case, show elements greater than 5 */
+    public void test3() {
+
+        Tree23<Integer> tree23 = new Tree23<>();
+
+        for(int i = 0; i <= 10; i++) tree23.add(i);
+
+        tree23.inOrder();
+
+        System.out.println("inOrder using predicate (t > 5):");
+        tree23.inOrder(t -> t > 5);
     }
 
     public static void main(String[] args) {
 
         Test t = new Test();
 
-        System.out.println("Here");
-        t.test2();
+        t.test3();
 
     }
 
