@@ -27,7 +27,7 @@ import java.util.function.Predicate;
  *
  * <p>It is focused on performing fast searchs.</p>
  *
- * <p>Check this <a href="https://en.wikipedia.org/wiki/2–3_tree"> link</a> for a deepest explanation
+ * <p>Check this <a href="https://en.wikipedia.org/wiki/2&#8208;3_tree"> link</a> for a deepest explanation
  * of how it works.</p>
  *
  * @param <T> Generic element
@@ -475,16 +475,16 @@ public class Tree23<T extends Comparable<T>> {
 	/**
 	 * Prints the elements of the tree in order.
 	 */
-	public void inOrder() {
+	public void preOrder() {
 
 		if(!isEmpty()) {
 
-			inOrderI(root);    // Immersion
+			preOrderI(root);    // Immersion
 		}
 		else System.out.println("The tree is empty");
 	}
 
-	private void inOrderI(Node current) {
+	private void preOrderI(Node current) {
 
 		if(current != null) {
 
@@ -495,16 +495,16 @@ public class Tree23<T extends Comparable<T>> {
 			}
 			else {
 
-				inOrderI(current.getLeftSon());
+				preOrderI(current.getLeftSon());
 				System.out.println(current.getLeftElement().toString());
 
-				inOrderI(current.getMidSon());
+				preOrderI(current.getMidSon());
 
 				if(current.getRightElement() != null) {
 
 					if(!current.isLeaf()) System.out.println(current.getRightElement().toString());
 
-					inOrderI(current.getRightSon());
+					preOrderI(current.getRightSon());
 				}
 			}
 		}
@@ -515,16 +515,16 @@ public class Tree23<T extends Comparable<T>> {
 	 *
 	 * @param predicate The condition that an element must accomplish to be printed
 	 */
-	public void inOrder(Predicate<T> predicate) {
+	public void preOrder(Predicate<T> predicate) {
 
 		if(!isEmpty()) {
 
-			inOrderI(root, predicate);    // Immersion
+			preOrderI(root, predicate);    // Immersion
 		}
 		else System.out.println("The tree is empty");
 	}
 
-	private void inOrderI(Node current, Predicate<T> predicate) {
+	private void preOrderI(Node current, Predicate<T> predicate) {
 
 		if(current != null) {
 
@@ -539,17 +539,17 @@ public class Tree23<T extends Comparable<T>> {
 			}
 			else {
 
-				inOrderI(current.getLeftSon(), predicate);
+				preOrderI(current.getLeftSon(), predicate);
 
 				if(predicate.test(current.getLeftElement())) System.out.println(current.getLeftElement().toString());
 
-				inOrderI(current.getMidSon(), predicate);
+				preOrderI(current.getMidSon(), predicate);
 
 				if(current.getRightElement() != null) {
 
 					if(!current.isLeaf() && predicate.test(current.getRightElement())) System.out.println(current.getRightElement().toString());
 
-					inOrderI(current.getRightSon(), predicate);
+					preOrderI(current.getRightSon(), predicate);
 				}
 			}
 		}

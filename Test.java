@@ -42,7 +42,7 @@ public class Test {
             i++;
         }
 
-        tree.inOrder();
+        tree.preOrder();
 
         //tree.debug_tree();
 
@@ -67,7 +67,7 @@ public class Test {
 
         //tree.debug_tree();
 
-        tree.inOrder();
+        tree.preOrder();
     }
 
     /* Checks the addAll and addAllSafe methods */
@@ -84,7 +84,7 @@ public class Test {
 
         tree23.addAll(array);
 
-        tree23.inOrder();
+        tree23.preOrder();
 
         array.add(20);
         array.add(6);
@@ -92,7 +92,7 @@ public class Test {
 
         tree23.addAllSafe(array);
 
-        tree23.inOrder();
+        tree23.preOrder();
 
     }
 
@@ -103,10 +103,10 @@ public class Test {
 
         for(int i = 0; i <= 10; i++) tree23.add(i);
 
-        tree23.inOrder();
+        tree23.preOrder();
 
         System.out.println("inOrder using predicate (t > 5):");
-        tree23.inOrder(t -> t > 5);
+        tree23.preOrder(t -> t > 5);
     }
 
     public void test4() {
@@ -120,11 +120,13 @@ public class Test {
         tree23.remove(5);
 
         System.out.println("First instance content: ");
-        tree23.inOrder();
+        tree23.preOrder();
 
         System.out.println("Copy: ");
-        copy.inOrder();
+        copy.preOrder();
     }
+
+
 
     public static void main(String[] args) {
 
