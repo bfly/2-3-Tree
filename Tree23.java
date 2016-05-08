@@ -39,7 +39,7 @@ public class Tree23<T extends Comparable<T>> {
 
 	private Node root;              // The root of the tree
 	
-	private int size;              // Number of size inside of the tree
+	private int size;              // Number of elements inside of the tree
 	
 	private static final int    ROOT_IS_BIGGER = 1;
 	private static final int    ROOT_IS_SMALLER = -1;
