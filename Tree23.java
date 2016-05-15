@@ -317,6 +317,7 @@ public class Tree23<T extends Comparable<T>> {
 	 */
 	public void clear() {
 
+		this.size = 0;
 		this.root = null;	// GC do the rest
 	}
 	/**
@@ -399,7 +400,7 @@ public class Tree23<T extends Comparable<T>> {
 				if(current.getRightElement() != null && current.getRightElement().equals(element)) found = current.getRightElement();
 				else {
 					// Recursive cases
-					if(current.getLeftElement() != null && current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+					if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
 
 						found = findI(current.left, element);
 					}
@@ -407,7 +408,10 @@ public class Tree23<T extends Comparable<T>> {
 
 						found = findI(current.mid, element);
 					}
-					else found = findI(current.right, element);
+					else if (current.getRightElement().compareTo(element) == ROOT_IS_SMALLER) {
+						found = findI(current.right, element);
+					}
+					else return null;
 				}
 			}
 		}
