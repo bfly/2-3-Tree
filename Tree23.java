@@ -393,22 +393,22 @@ public class Tree23<T extends Comparable<T>> {
 		if(current != null) {
 
 			// Trivial case, we have found the element
-			if(current.getLeftElement() != null && current.getLeftElement().equals(element)) found = current.getLeftElement();
+			if(current.leftElement != null && current.leftElement.equals(element)) found = current.leftElement;
 			else {
 
 				// Second trivial case, the element to find equals the right element
-				if(current.getRightElement() != null && current.getRightElement().equals(element)) found = current.getRightElement();
+				if(current.rightElement != null && current.rightElement.equals(element)) found = current.rightElement;
 				else {
 					// Recursive cases
-					if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+					if(current.leftElement.compareTo(element) == ROOT_IS_BIGGER) {
 
 						found = findI(current.left, element);
 					}
-					else if(current.getRightSon() == null || current.getRightElement().compareTo(element) == ROOT_IS_BIGGER) {
+					else if(current.right == null || current.rightElement.compareTo(element) == ROOT_IS_BIGGER) {
 
 						found = findI(current.mid, element);
 					}
-					else if (current.getRightElement().compareTo(element) == ROOT_IS_SMALLER) {
+					else if (current.rightElement.compareTo(element) == ROOT_IS_SMALLER) {
 						found = findI(current.right, element);
 					}
 					else return null;
@@ -566,9 +566,9 @@ public class Tree23<T extends Comparable<T>> {
 	public boolean isEmpty() {
 		
 		if(root == null) return true;
-		
+
 		if(root.getLeftElement() == null) return true;
-		
+
 		return false;
 	}
 
@@ -1015,24 +1015,23 @@ public class Tree23<T extends Comparable<T>> {
 			
 			T max = null;
 			
-			if(!isLeaf()) { // Cas recursiu, no hem arribat al nivell mes profund
+			if(!isLeaf()) { // Recursive case, we are not on the deepest level
 				
 				if(getRightElement() != null) {
 					
-					max = right.replaceMax(); // Si hi ha element a la dreta, seguim per la dreta
+					max = right.replaceMax(); // If there is an element on the right, we continue on the right
 				}
-				else max = mid.replaceMax();  // Sino, seguim pel mig
+				else max = mid.replaceMax();  // else, we continue on the mid
 				
 			}
-			else {			// Cas trivial, hem arribat al nivell mes profund
+			else {	// Trivial case, we are on the deepest level of the tree
 				
 				if(getRightElement() != null) {
 					
 					max = getRightElement();
 					
 					setRightElement(null);
-					
-					// Aqui tenim sort i no hem de balancejar res de res
+					// We are luck, we don't need to rebalance anything
 				}
 				else {
 					
@@ -1040,17 +1039,11 @@ public class Tree23<T extends Comparable<T>> {
 					
 					setLeftElement(null);
 					
-					// A la primera pujada es produira un rebalanceig
+					// On the first up of the recursive function, there will be a rebalance
 				}
 			}
-			
-			// PUJADA DE LA RECURSIVA ---> Hem d'anar comprovant balanceig, no sabem que ha passat al extreure
-			// La realitat es que nomes es comprovara balanceig en el nivell superior a la subcrida
-			if(!isBalanced()) {
-					
-				rebalance(); // Rebalancegem i llestos
-				
-			}
+
+			if(!isBalanced()) rebalance(); // Keep calm and rebalance
 			
 			return max;
 		}
