@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 
-import static javafx.scene.input.KeyCode.T;
-
 /**
  * A test class with a main to try the 2-3 Tree.
  */
@@ -42,7 +40,7 @@ public class Test {
             i++;
         }
 
-        tree.preOrder();
+        tree.inOrder();
 
         //tree.debug_tree();
 
@@ -67,7 +65,7 @@ public class Test {
 
         //tree.debug_tree();
 
-        tree.preOrder();
+        tree.inOrder();
     }
 
     /* Checks the addAll and addAllSafe methods */
@@ -84,7 +82,7 @@ public class Test {
 
         tree23.addAll(array);
 
-        tree23.preOrder();
+        tree23.inOrder();
 
         array.add(20);
         array.add(6);
@@ -92,7 +90,7 @@ public class Test {
 
         tree23.addAllSafe(array);
 
-        tree23.preOrder();
+        tree23.inOrder();
 
     }
 
@@ -103,10 +101,10 @@ public class Test {
 
         for(int i = 0; i <= 10; i++) tree23.add(i);
 
-        tree23.preOrder();
+        tree23.inOrder();
 
         System.out.println("inOrder using predicate (t > 5):");
-        tree23.preOrder(t -> t > 5);
+        tree23.inOrder(t -> t > 5);
     }
 
     public void test4() {
@@ -134,7 +132,6 @@ public class Test {
         Test t = new Test();
 
         t.test4();
-
     }
 
 

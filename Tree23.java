@@ -419,7 +419,6 @@ public class Tree23<T extends Comparable<T>> {
 		return found;
 	}
 
-
 	/**
 	 * @return The min element of the tree
 	 */
@@ -459,7 +458,6 @@ public class Tree23<T extends Comparable<T>> {
 		else return current.leftElement;
 	}
 
-
     /**
      * @return the number of levels of the tree (max deep)
      */
@@ -479,16 +477,16 @@ public class Tree23<T extends Comparable<T>> {
 	/**
 	 * Prints the elements of the tree in order.
 	 */
-	public void preOrder() {
+	public void inOrder() {
 
 		if(!isEmpty()) {
 
-			preOrderI(root);    // Immersion
+			inOrderI(root);    // Immersion
 		}
 		else System.out.println("The tree is empty");
 	}
 
-	private void preOrderI(Node current) {
+	private void inOrderI(Node current) {
 
 		if(current != null) {
 
@@ -499,16 +497,16 @@ public class Tree23<T extends Comparable<T>> {
 			}
 			else {
 
-				preOrderI(current.getLeftSon());
+				inOrderI(current.getLeftSon());
 				System.out.println(current.getLeftElement().toString());
 
-				preOrderI(current.getMidSon());
+				inOrderI(current.getMidSon());
 
 				if(current.getRightElement() != null) {
 
 					if(!current.isLeaf()) System.out.println(current.getRightElement().toString());
 
-					preOrderI(current.getRightSon());
+					inOrderI(current.getRightSon());
 				}
 			}
 		}
@@ -519,16 +517,16 @@ public class Tree23<T extends Comparable<T>> {
 	 *
 	 * @param predicate The condition that an element must accomplish to be printed
 	 */
-	public void preOrder(Predicate<T> predicate) {
+	public void inOrder(Predicate<T> predicate) {
 
 		if(!isEmpty()) {
 
-			preOrderI(root, predicate);    // Immersion
+			inOrderI(root, predicate);    // Immersion
 		}
 		else System.out.println("The tree is empty");
 	}
 
-	private void preOrderI(Node current, Predicate<T> predicate) {
+	private void inOrderI(Node current, Predicate<T> predicate) {
 
 		if(current != null) {
 
@@ -543,22 +541,21 @@ public class Tree23<T extends Comparable<T>> {
 			}
 			else {
 
-				preOrderI(current.getLeftSon(), predicate);
+				inOrderI(current.getLeftSon(), predicate);
 
 				if(predicate.test(current.getLeftElement())) System.out.println(current.getLeftElement().toString());
 
-				preOrderI(current.getMidSon(), predicate);
+				inOrderI(current.getMidSon(), predicate);
 
 				if(current.getRightElement() != null) {
 
 					if(!current.isLeaf() && predicate.test(current.getRightElement())) System.out.println(current.getRightElement().toString());
 
-					preOrderI(current.getRightSon(), predicate);
+					inOrderI(current.getRightSon(), predicate);
 				}
 			}
 		}
 	}
-
 
 	/**
 	 * @return True if the tree is empty, false if not
@@ -643,6 +640,63 @@ public class Tree23<T extends Comparable<T>> {
 		return modified;
 	}
 
+    /**
+     * Prints the elements of the tree in pre order.
+     */
+	public void preOrder() {
+
+        if (!isEmpty()) {
+
+            preOrderI(root);
+        }
+        else System.out.println("The tree is empty");
+    }
+
+    private void preOrderI(Node current) {
+
+        if(current != null) {
+
+            System.out.println(current.leftElement.toString());
+            preOrderI(current.left);
+            preOrderI(current.mid);
+
+            if (current.rightElement != null) {
+
+                System.out.println(current.rightElement.toString());
+                preOrderI(current.right);
+            }
+        }
+    }
+
+    /**
+     * Prints the elements of the tree in pre order mode if they accomplish a condition.
+     *
+     * @param predicate The condition that an element must accomplish to be printed
+     */
+    public void preOrder(Predicate<T> predicate) {
+
+        if (!isEmpty()) {
+
+            preOrderI(root, predicate);
+        }
+        else System.out.println("The tree is empty");
+    }
+
+    private void preOrderI(Node current, Predicate<T> predicate) {
+
+        if(current != null) {
+
+            if (predicate.test(current.leftElement)) System.out.println(current.leftElement.toString());
+            preOrderI(current.left);
+            preOrderI(current.mid);
+
+            if (current.rightElement != null) {
+
+                if (predicate.test(current.rightElement)) System.out.println(current.rightElement.toString());
+                preOrderI(current.right);
+            }
+        }
+    }
 
 	/**
 	 * Deletes an element from the tree.
