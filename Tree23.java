@@ -375,7 +375,7 @@ public class Tree23<T extends Comparable<T>> {
 
 
 	/**
-	 * Search an element inside of the tree.
+	 * Searches an element inside of the tree.
 	 *
 	 * @param element The element to find
 	 *
