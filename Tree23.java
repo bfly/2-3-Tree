@@ -169,82 +169,73 @@ public class Tree23<T extends Comparable<T>> {
 	private Node addElementI(Node current, T element) {
 
 		Node newParent = null;
-		Node sonAscended = null;
 
 		// We aren't in the deepest level yet
 		if(!current.isLeaf()) {
 
-			if(current.getLeftElement().compareTo(element) == 0 || (current.getRightElement() != null && current.getRightElement().compareTo(element) == 0)) {
+		    Node sonAscended = null;
+
+			if (current.leftElement.compareTo(element) == 0 || (current.is3Node() && current.rightElement.compareTo(element) == 0)) {
 
 				// Already exists. This condition can be modified for the particular needs of any programmer
 			}
 			// The new element is smaller than the left element
-			else if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+			else if (current.leftElement.compareTo(element) == ROOT_IS_BIGGER) {
 
 				sonAscended = addElementI(current.left, element);
 
 				// Case sonAscended != null --> the element has been added on a 3-node (there were 2 elements)
-				if(sonAscended != null) { // A new node comes from the left branch
+				if (sonAscended != null) { // A new node comes from the left branch
 
 					// The new element, in this case, is always less than the current.left
-					if(current.getRightElement() == null) {
+					if (current.is2Node()) {
 
-						current.setRightElement(current.getLeftElement());  // shift the current left element to the right
-
-						current.setLeftElement(sonAscended.getLeftElement());
-
-						current.setRightSon(current.getMidSon());
-
-						current.setMidSon(sonAscended.getMidSon());
-
-						current.setLeftSon(sonAscended.getLeftSon());
+						current.rightElement    = current.leftElement;  // shift the current left element to the right
+						current.leftElement     = sonAscended.leftElement;
+						current.right           = current.mid;
+						current.mid             = sonAscended.mid;
+						current.left            = sonAscended.left;
 					}
 					else { // In this case we have a new split, so the current element in the left will go up
 
 						// We copy the right part of the subtree
-						Node rightCopy = new Node(current.getRightElement(), null, current.getMidSon(), current.getRightSon());
+						Node rightCopy = new Node(current.rightElement, null, current.mid, current.right);
 
 						// Now we create the new "structure", pasting the right part
-						newParent = new Node(current.getLeftElement(), null, sonAscended, rightCopy);
+						newParent = new Node(current.leftElement, null, sonAscended, rightCopy);
 					}
 				}
 
 				// Case: the ascended element is bigger than the left element and less than the right element
-			} else if(current.getRightElement() == null || (current.getRightElement() != null && current.getRightElement().compareTo(element) == ROOT_IS_BIGGER)) {
+			} else if (current.is2Node() || (current.is3Node() && current.rightElement.compareTo(element) == ROOT_IS_BIGGER)) {
 
 				sonAscended = addElementI(current.mid, element);
 
-				if(sonAscended != null) { // A new split
+				if (sonAscended != null) { // A new split
 
 					// The right element is empty, so we can set the ascended element in the left and the existing left element into the right
-					if(current.getRightElement() == null) {
+					if (current.is2Node()) {
 
-						current.setRightElement(sonAscended.getLeftElement());
-
-						current.setRightSon(sonAscended.getMidSon());
-
-						current.setMidSon(sonAscended.getLeftSon());
+						current.rightElement    = sonAscended.leftElement;
+						current.right           = sonAscended.mid;
+						current.mid             = sonAscended.left;
 					}
-					else { // Another case we have to split
+					else { // Another case we have to split again
 
-						Node left = new Node(current.getLeftElement(), null, current.getLeftSon(), sonAscended.getLeftSon());
-
-						Node mid = new Node(current.getRightElement(), null, sonAscended.getMidSon(), current.getRightSon());
-
-						newParent = new Node(sonAscended.getLeftElement(), null, left, mid);
+						Node left 	= new Node(current.leftElement, null, current.left, sonAscended.left);
+						Node mid 	= new Node(current.rightElement, null, sonAscended.mid, current.right);
+						newParent 	= new Node(sonAscended.leftElement, null, left, mid);
 					}
 				}
-
 				// The new element is bigger than the right element
-			} else if(current.getRightElement() != null && current.getRightElement().compareTo(element) == ROOT_IS_SMALLER) {
+			} else if (current.is3Node() && current.rightElement.compareTo(element) == ROOT_IS_SMALLER) {
 
 				sonAscended = addElementI(current.right, element);
 
-				if(sonAscended != null) { // Split, the right element goes up
+				if (sonAscended != null) { // Split, the right element goes up
 
-					Node leftCopy = new Node(current.getLeftElement(), null, current.getLeftSon(), current.getMidSon());
-
-					newParent = new Node(current.getRightElement(), null, leftCopy, sonAscended);
+					Node leftCopy   = new Node(current.leftElement, null, current.left, current.mid);
+					newParent       = new Node(current.rightElement, null, leftCopy, sonAscended);
 				}
 			}
 		}
@@ -253,63 +244,65 @@ public class Tree23<T extends Comparable<T>> {
 			addition = true;
 
 			// The element already exists
-			if(current.getLeftElement().compareTo(element) == 0 || (current.getRightElement() != null && current.getRightElement().compareTo(element) == 0)) {
+			if (current.leftElement.compareTo(element) == 0 || (current.is3Node() && current.rightElement.compareTo(element) == 0)) {
 
 				addition = false;
 			}
-			else if(current.getRightElement() == null) { // an easy case, there is not a right element
+			else if (current.is2Node()) { // an easy case, there is not a right element
 
 				// if the current left element is bigger than the new one --> we shift the left element to the right
-				if(current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
+				if (current.leftElement.compareTo(element) == ROOT_IS_BIGGER) {
 
-					current.setRightElement(current.getLeftElement());
-
-					current.setLeftElement(element);
+					current.rightElement    = current.leftElement;
+					current.leftElement     = element;
 				}
 				// if the new element is bigger, we add it in the right directly
-				else if(current.getLeftElement().compareTo(element) == ROOT_IS_SMALLER) {
-
-					current.setRightElement(element);
-				}
+				else if (current.leftElement.compareTo(element) == ROOT_IS_SMALLER) current.rightElement = element;
 			}
 			// Case 3-node: there are 2 elements in the node and we want to add another one. We have to split the node
-			else {
-
-				// The left element is bigger, so it will go up letting the new element on the left
-				if (current.getLeftElement().compareTo(element) == ROOT_IS_BIGGER) {
-
-					Node left = new Node(element, null);
-
-					Node right = new Node(current.getRightElement(), null);
-
-					newParent = new Node(current.getLeftElement(), null, left, right);
-
-				} else if (current.getLeftElement().compareTo(element) == ROOT_IS_SMALLER) {
-
-					// The new element is bigger than the current on the right and less than the right element
-					// The new element goes up
-					if (current.getRightElement().compareTo(element) == ROOT_IS_BIGGER) {
-
-						Node left = new Node(current.getLeftElement(), null);
-
-						Node right = new Node(current.getRightElement(), null);
-
-						newParent = new Node(element, null, left, right);
-
-					} else { // The new element is the biggest one, so the current right element goes up
-
-						Node left = new Node(current.getLeftElement(), null);
-
-						Node right = new Node(element, null);
-
-						newParent = new Node(current.getRightElement(), null, left, right);
-					}
-				}
-			}
+			else newParent = split(current, element);
 		}
 
 		return newParent;
 	}
+
+    /**
+     * Creates the new node structure that will be attached during the bottom up of the addElementI method.
+     *
+     * @param current   The node where the split takes place
+     * @param element   The element we are trying to add.
+     * @return          A 2-node structure with a non null left and mid node.
+     */
+	private Node split(Node current, T element) {
+        Node newParent = null;
+
+        // The left element is bigger, so it will go up letting the new element on the left
+        if (current.leftElement.compareTo(element) == ROOT_IS_BIGGER) {
+
+            Node left   = new Node(element, null);
+            Node right  = new Node(current.rightElement, null);
+            newParent   = new Node(current.leftElement, null, left, right);
+
+        } else if (current.leftElement.compareTo(element) == ROOT_IS_SMALLER) {
+
+            // The new element is bigger than the current on the right and less than the right element
+            // The new element goes up
+            if (current.rightElement.compareTo(element) == ROOT_IS_BIGGER) {
+
+                Node left   = new Node(current.leftElement, null);
+                Node right  = new Node(current.rightElement, null);
+                newParent   = new Node(element, null, left, right);
+
+            } else { // The new element is the biggest one, so the current right element goes up
+
+                Node left   = new Node(current.leftElement, null);
+                Node right  = new Node(element, null);
+                newParent   = new Node(current.rightElement, null, left, right);
+            }
+        }
+
+        return newParent;
+    }
 
 
 	/**
@@ -1031,6 +1024,16 @@ public class Tree23<T extends Comparable<T>> {
 
 			return left == null && mid == null && right == null;
 		}
+
+		private boolean is2Node() {
+
+		    return rightElement == null; // also, right node is null but this will be always true if rightElement == null
+        }
+
+        private boolean is3Node() {
+
+		    return rightElement != null; // also, right node is not null but this will be always true if rightElement <> null
+        }
 		
 		/**
          * Checks if the tree is well-balanced or not
