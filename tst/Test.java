@@ -5,11 +5,9 @@ import java.util.ArrayList;
  */
 public class Test {
 
+    public void test1() {
 
-    public void test() {
-
-        Tree23<Integer> tree = new Tree23<Integer>();
-
+        Tree23<Integer> tree = new Tree23<>();
 
         System.out.println("Tree created");
 
@@ -73,7 +71,7 @@ public class Test {
 
         Tree23<Integer> tree23 = new Tree23<>();
 
-        ArrayList<Integer> array = new ArrayList<Integer>();
+        ArrayList<Integer> array = new ArrayList<>();
 
         array.add(5);
         array.add(10);
@@ -130,7 +128,9 @@ public class Test {
     public static void main(String[] args) {
 
         Test t = new Test();
-
+        t.test1();
+        t.test2();
+        t.test3();
         t.test4();
     }
 
