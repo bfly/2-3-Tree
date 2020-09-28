@@ -14,6 +14,7 @@ This program creates a generic 2-3 Tree Data Structure in Java.
 * findMin: Returns the min element of the tree.
 * findMax: Returns the max element of the tree.
 * getLevel: Returns the number of levels of the tree (max deep).
+* levelOrder: Prints the entire tree level by level.
 * inOrder: Prints the elements of the tree in order.
 * isEmpty: Returns a boolean to indicate if the tree is empty or not.
 * modify: Finds an element inside the tree and modifies it.

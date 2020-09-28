@@ -113,7 +113,6 @@ class Tree23Test {
             new Card(Card.Rank.Queen, Card.Suit.Spades),
             new Card(Card.Rank.King,  Card.Suit.Spades),
             new Card(Card.Rank.Ace,   Card.Suit.Spades)
-
         ));
 
         System.out.println("Tree size: " + tree.size());
