@@ -61,7 +61,6 @@ public class Tree23<T extends Comparable<T>> {
 		elements.forEach(this::add);	// Java 8
     }
 
-
 	/**
 	 * Adds a new element to the tree keeping it balanced.
 	 *
@@ -85,7 +84,7 @@ public class Tree23<T extends Comparable<T>> {
 		}
 		else {
 
-			Node23<T> newRoot = addElementI(root, element); // Immersion
+			Node23<T> newRoot = addElement(root, element); // Immersion
 
 			if(newRoot != null) root = newRoot;
 		}
@@ -94,7 +93,6 @@ public class Tree23<T extends Comparable<T>> {
 
 		return addition;
 	}
-
 
 	/**
 	 * Adds all the elements into the tree.
@@ -114,7 +112,6 @@ public class Tree23<T extends Comparable<T>> {
 
 		return ok;
 	}
-
 
 	/**
 	 * Adds all the elements into the tree. If one or more elements can't be inserted because they already
@@ -165,7 +162,7 @@ public class Tree23<T extends Comparable<T>> {
 	 *
 	 * @return If there is a new level to add (we have tried to add a new element to a 3-node) or we don't have to do nothing (node is null)
 	 */
-	private Node23<T> addElementI( Node23<T> current, T element) {
+	private Node23<T> addElement( Node23<T> current, T element) {
 
 		Node23<T> newParent = null;
 
@@ -182,7 +179,7 @@ public class Tree23<T extends Comparable<T>> {
 			// The new element is smaller than the left element
 			else if (current.getLeftElement().compareTo(element) > 0) {
 
-				sonAscended = addElementI(current.getLeft(), element);
+				sonAscended = addElement(current.getLeft(), element);
 
 				// Case sonAscended != null --> the element has been added on a 3-node (there were 2 elements)
 				if (sonAscended != null) { // A new node comes from the left branch
@@ -209,7 +206,7 @@ public class Tree23<T extends Comparable<T>> {
 				// Case: the ascended element is bigger than the left element and less than the right element
 			} else if (current.is2Node() || (current.is3Node() && current.getRightElement().compareTo(element) > 0)) {
 
-				sonAscended = addElementI(current.getMid(), element);
+				sonAscended = addElement(current.getMid(), element);
 
 				if (sonAscended != null) { // A new split
 
@@ -230,7 +227,7 @@ public class Tree23<T extends Comparable<T>> {
 				// The new element is bigger than the right element
 			} else if (current.is3Node() && current.getRightElement().compareTo(element) < 0) {
 
-				sonAscended = addElementI(current.getRight(), element);
+				sonAscended = addElement(current.getRight(), element);
 
 				if (sonAscended != null) { // Split, the right element goes up
 
@@ -303,7 +300,6 @@ public class Tree23<T extends Comparable<T>> {
         return newParent;
     }
 
-
 	/**
 	 * Removes all of the elements from this Tree23 instance.
 	 */
@@ -311,6 +307,7 @@ public class Tree23<T extends Comparable<T>> {
 		this.size = 0;
 		this.root = null;	// GC do the rest
 	}
+
 	/**
 	 * Creates a copy of this Tree23 instance.
 	 *
@@ -433,7 +430,7 @@ public class Tree23<T extends Comparable<T>> {
         int level = 0;
 
         while(aux != null) {
-            aux = root.getLeft();
+            aux = aux.getLeft();
             level++;
         }
 
@@ -584,6 +581,7 @@ public class Tree23<T extends Comparable<T>> {
 
 		return modified;
 	}
+
 	public void levelOrder() { levelOrder(root); }
 
 	public void levelOrder( Node23<T> root) {
@@ -622,7 +620,6 @@ public class Tree23<T extends Comparable<T>> {
 		}
 	}
 
-
 	/**
      * Prints the elements of the tree in pre order.
      */
@@ -654,11 +651,11 @@ public class Tree23<T extends Comparable<T>> {
      */
     public void preOrder(Predicate<T> predicate) {
 
-        if (!isEmpty()) preOrderI(root, predicate);
+        if (!isEmpty()) preOrder(root, predicate);
         else System.out.println("The tree is empty");
     }
 
-    private void preOrderI(Node23<T> current, Predicate<T> predicate) {
+    private void preOrder(Node23<T> current, Predicate<T> predicate) {
 
         if(current != null) {
 
@@ -689,7 +686,7 @@ public class Tree23<T extends Comparable<T>> {
         // We decrease the number of levels at the start, if the element is not deleted, we increase the value at the end
         this.size--;
 
-		deleted = removeI(root, element); // Immersion
+		deleted = remove(root, element); // Immersion
 		
 		root.rebalance();
 		
@@ -730,7 +727,7 @@ public class Tree23<T extends Comparable<T>> {
 	 * 
 	 * @return True if the element has been deleted or false if not
 	 */
-	private boolean removeI(Node23<T> current, T element) {
+	private boolean remove(Node23<T> current, T element) {
 		boolean deleted = true;
 
 		// Trivial case, we are in the deepest level of the tree but we have not found the element (it does not exist)
@@ -746,11 +743,11 @@ public class Tree23<T extends Comparable<T>> {
 					// The left element is bigger than the element to delete, so we go through the left child
 					if(current.getLeftElement().compareTo(element) > 0) {
 						
-						deleted = removeI(current.getLeft(), element);
+						deleted = remove(current.getLeft(), element);
 					}
 					else { // If not, we go through the mid child
 						
-						deleted = removeI(current.getMid(), element);
+						deleted = remove(current.getMid(), element);
 					}
 				}
 				else {
@@ -758,7 +755,7 @@ public class Tree23<T extends Comparable<T>> {
 					// If the element to delete does not equals the right element, we go through the right child
 					if(!current.getRightElement().equals(element)) {
 						
-						deleted = removeI(current.getRight(), element);
+						deleted = remove(current.getRight(), element);
 					}
 					else { // If not, we have found the element
 
@@ -871,12 +868,10 @@ public class Tree23<T extends Comparable<T>> {
 		return deleted;
 	}
 
-
 	/**
 	 * @return The number of elements inside of the tree
 	 * */
 	public int size() {
-
 		return size;
 	}
 }

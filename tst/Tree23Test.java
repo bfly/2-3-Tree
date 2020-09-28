@@ -56,27 +56,71 @@ class Tree23Test {
         tree.levelOrder();
     }
 
-//    @Test
-//    void testCardTree() {
-//        Tree23<Card> tree = new Tree23<>();
-//
-//        tree.addAll(new Card[]{
-//            new Card(0, 0),     // two of clubs
-//            new Card(1, 1),     // three of diamonds
-//            new Card(2, 2),     // four of hearts
-//            new Card(3, 3),     // five of spades
-//            new Card(9, 0),     // jack of clubs
-//            new Card(10, 1),    // queen of diamonds
-//            new Card(11, 2),    // king of hearts
-//            new Card(12, 3)     // ace of spades
-//        });
-//
-//        System.out.println("Tree size: " + tree.size());
-//        System.out.print("InOrder: ");   tree.inOrder();   System.out.println();
-//        System.out.print("PreOrder: ");  tree.preOrder();  System.out.println();
-//        System.out.print("PostOrder: "); tree.postOrder(); System.out.println();
-//        System.out.println();
-//
-//        tree.levelOrder();
-//    }
+    @Test
+    void testCardTree() {
+        Tree23<Card> tree = new Tree23<>();
+
+        tree.addAll(List.of(
+            new Card(Card.Rank.Two,   Card.Suit.Clubs),
+            new Card(Card.Rank.Three, Card.Suit.Clubs),
+            new Card(Card.Rank.Four,  Card.Suit.Clubs),
+            new Card(Card.Rank.Five,  Card.Suit.Clubs),
+            new Card(Card.Rank.Six,   Card.Suit.Clubs),
+            new Card(Card.Rank.Seven, Card.Suit.Clubs),
+            new Card(Card.Rank.Eight, Card.Suit.Clubs),
+            new Card(Card.Rank.Nine,  Card.Suit.Clubs),
+            new Card(Card.Rank.Ten,   Card.Suit.Clubs),
+            new Card(Card.Rank.Jack,  Card.Suit.Clubs),
+            new Card(Card.Rank.Queen, Card.Suit.Clubs),
+            new Card(Card.Rank.King,  Card.Suit.Clubs),
+            new Card(Card.Rank.Ace,   Card.Suit.Clubs),
+            new Card(Card.Rank.Two,   Card.Suit.Diamonds),
+            new Card(Card.Rank.Three, Card.Suit.Diamonds),
+            new Card(Card.Rank.Four,  Card.Suit.Diamonds),
+            new Card(Card.Rank.Five,  Card.Suit.Diamonds),
+            new Card(Card.Rank.Six,   Card.Suit.Diamonds),
+            new Card(Card.Rank.Seven, Card.Suit.Diamonds),
+            new Card(Card.Rank.Eight, Card.Suit.Diamonds),
+            new Card(Card.Rank.Nine,  Card.Suit.Diamonds),
+            new Card(Card.Rank.Ten,   Card.Suit.Diamonds),
+            new Card(Card.Rank.Jack,  Card.Suit.Diamonds),
+            new Card(Card.Rank.Queen, Card.Suit.Diamonds),
+            new Card(Card.Rank.King,  Card.Suit.Diamonds),
+            new Card(Card.Rank.Ace,   Card.Suit.Diamonds),
+            new Card(Card.Rank.Two,   Card.Suit.Hearts),
+            new Card(Card.Rank.Three, Card.Suit.Hearts),
+            new Card(Card.Rank.Four,  Card.Suit.Hearts),
+            new Card(Card.Rank.Five,  Card.Suit.Hearts),
+            new Card(Card.Rank.Six,   Card.Suit.Hearts),
+            new Card(Card.Rank.Seven, Card.Suit.Hearts),
+            new Card(Card.Rank.Eight, Card.Suit.Hearts),
+            new Card(Card.Rank.Nine,  Card.Suit.Hearts),
+            new Card(Card.Rank.Ten,   Card.Suit.Hearts),
+            new Card(Card.Rank.Jack,  Card.Suit.Hearts),
+            new Card(Card.Rank.Queen, Card.Suit.Hearts),
+            new Card(Card.Rank.King,  Card.Suit.Hearts),
+            new Card(Card.Rank.Ace,   Card.Suit.Hearts),
+            new Card(Card.Rank.Two,   Card.Suit.Spades),
+            new Card(Card.Rank.Three, Card.Suit.Spades),
+            new Card(Card.Rank.Four,  Card.Suit.Spades),
+            new Card(Card.Rank.Five,  Card.Suit.Spades),
+            new Card(Card.Rank.Six,   Card.Suit.Spades),
+            new Card(Card.Rank.Seven, Card.Suit.Spades),
+            new Card(Card.Rank.Eight, Card.Suit.Spades),
+            new Card(Card.Rank.Nine,  Card.Suit.Spades),
+            new Card(Card.Rank.Ten,   Card.Suit.Spades),
+            new Card(Card.Rank.Jack,  Card.Suit.Spades),
+            new Card(Card.Rank.Queen, Card.Suit.Spades),
+            new Card(Card.Rank.King,  Card.Suit.Spades),
+            new Card(Card.Rank.Ace,   Card.Suit.Spades)
+
+        ));
+
+        System.out.println("Tree size: " + tree.size());
+        System.out.print("InOrder: ");   tree.inOrder();   System.out.println();
+        System.out.print("PreOrder: ");  tree.preOrder();  System.out.println();
+        System.out.print("Height: ");  System.out.println(tree.getLevel());
+        System.out.println();
+        tree.levelOrder();
+    }
 }
