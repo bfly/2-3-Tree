@@ -122,4 +122,24 @@ class Tree23Test {
         System.out.println();
         tree.levelOrder();
     }
+
+    @Test
+    void test5Numbers() {
+        Tree23<Integer> tree = new Tree23<>();
+        System.out.println("Adding 50...");
+        tree.add(50);
+        tree.levelOrder();
+        System.out.println("Adding 30");
+        tree.add(30);
+        tree.levelOrder();
+        System.out.println("Adding 10");
+        tree.add(10);
+        tree.levelOrder();
+        System.out.println("Adding 70");
+        tree.add(70);
+        tree.levelOrder();
+        System.out.println("Adding 60");
+        tree.add(60);
+        tree.levelOrder();
+    }
 }
